@@ -4,12 +4,24 @@ import { Suspense, useState } from "react";
 import { SearchBar } from "@/components/map/SearchBar";
 import { Navigation } from "lucide-react";
 
+import { useSearchParams } from "next/navigation";
+import { useDashboard } from "@/context/DashboardContext";
+
 export function TopBar() {
   const [radius, setRadius] = useState("500");
+  const searchParams = useSearchParams();
+  const { analyze, loading } = useDashboard();
 
   const handleAnalyze = () => {
-    // We will dispatch an event or update the URL with a trigger to fetch data
-    console.log("Analyzing with radius:", radius);
+    const lat = parseFloat(searchParams.get("lat") || "");
+    const lng = parseFloat(searchParams.get("lng") || "");
+    
+    if (isNaN(lat) || isNaN(lng)) {
+      alert("Please select a location on the map first.");
+      return;
+    }
+
+    analyze(lat, lng, parseInt(radius));
   };
 
   return (
@@ -30,7 +42,8 @@ export function TopBar() {
         <select 
           value={radius} 
           onChange={(e) => setRadius(e.target.value)}
-          className="h-9 rounded-md border border-border bg-background px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          className="h-9 rounded-md border border-border bg-background px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
+          disabled={loading}
         >
           <option value="500">500m Radius</option>
           <option value="1000">1km Radius</option>
@@ -39,10 +52,15 @@ export function TopBar() {
         
         <button 
           onClick={handleAnalyze}
-          className="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2"
+          disabled={loading}
+          className="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
         >
-          <Navigation className="w-4 h-4" />
-          Analyze Area
+          {loading ? (
+            <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
+          ) : (
+            <Navigation className="w-4 h-4" />
+          )}
+          {loading ? "Analyzing..." : "Analyze Area"}
         </button>
       </div>
     </header>
