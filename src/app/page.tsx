@@ -18,8 +18,17 @@ export default function Home() {
             </Suspense>
             
             {/* Map Center Marker / Crosshair */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10 flex flex-col items-center justify-center">
-              <div className="w-4 h-4 rounded-full border-2 border-primary bg-primary/20 shadow-[0_0_0_4px_rgba(0,0,0,0.1)]"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10 flex items-center justify-center">
+              <div className="relative">
+                <div className="w-8 h-8 border border-primary/30 rounded-full animate-ping opacity-20" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-1 h-1 bg-primary rounded-full shadow-[0_0_10px_#facc15]" />
+                  <div className="absolute w-4 h-[1px] bg-primary/40 -left-6" />
+                  <div className="absolute w-4 h-[1px] bg-primary/40 -right-6" />
+                  <div className="absolute h-4 w-[1px] bg-primary/40 -top-6" />
+                  <div className="absolute h-4 w-[1px] bg-primary/40 -bottom-6" />
+                </div>
+              </div>
             </div>
           </div>
         </div>

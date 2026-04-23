@@ -17,13 +17,14 @@ export function TopBar() {
   const handleAnalyze = () => {
     const lat = parseFloat(searchParams.get("lat") || "");
     const lng = parseFloat(searchParams.get("lng") || "");
+    const name = searchParams.get("name") || "Selected Area";
     
     if (isNaN(lat) || isNaN(lng)) {
       alert("Please select a location on the map first.");
       return;
     }
 
-    analyze(lat, lng, parseInt(radius));
+    analyze(lat, lng, parseInt(radius), undefined, name);
   };
 
   return (

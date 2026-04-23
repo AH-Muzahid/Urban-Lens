@@ -2,15 +2,17 @@
 
 import { MetricCard } from "./MetricCard";
 import { useDashboard } from "@/context/DashboardContext";
-import { Search, MapPin, Info, AlertCircle, Globe } from "lucide-react";
+import { Search, MapPin, Info, AlertCircle, Globe, GitCompare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassBadge } from "@/components/ui/GlassBadge";
 import { StatusGlow } from "@/components/ui/StatusGlow";
 import { MetricValue } from "@/components/ui/MetricValue";
 import { GlassDivider } from "@/components/ui/GlassDivider";
+import { RadarChart } from "@/components/ui/RadarChart";
+import { UrbanButton } from "@/components/ui/UrbanButton";
 
 export function Sidebar() {
-  const { metrics, loading } = useDashboard();
+  const { metrics, loading, addToComparison } = useDashboard();
 
   if (!metrics && !loading) {
     return (
@@ -59,22 +61,53 @@ export function Sidebar() {
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center gap-2 text-zinc-500 mb-1.5">
-                <MapPin className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Location Profile</span>
+            <div className="flex items-start gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 text-zinc-500 mb-1.5">
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">Location Profile</span>
+                </div>
+                <h2 className="text-3xl font-black text-white tracking-tighter leading-[0.9] mb-4 drop-shadow-2xl">
+                  {loading ? (
+                    <span className="inline-block w-48 h-10 bg-white/5 animate-pulse rounded-lg" />
+                  ) : (
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-zinc-500">
+                      {metrics?.metadata.locationName || "Central District"}
+                    </span>
+                  )}
+                </h2>
+                <div className="flex items-center gap-2">
+                  <StatusGlow status="success" />
+                  <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20">
+                    Benchmarked Engine Active
+                  </span>
+                </div>
               </div>
-              <h2 className="text-2xl font-black text-white tracking-tighter leading-tight mb-3">
-                {loading ? (
-                  <span className="inline-block w-48 h-8 bg-white/5 animate-pulse rounded-lg" />
-                ) : (
-                  metrics?.metadata.locationName || "Central District"
-                )}
-              </h2>
-              <div className="flex items-center gap-2">
-                <StatusGlow status="success" />
-                <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Live Engine Active</span>
-              </div>
+              
+              {!loading && metrics && (
+                <div className="flex flex-col items-end gap-4">
+                  <div className="scale-110 origin-right">
+                    <RadarChart 
+                      size={90} 
+                      data={[
+                        { label: "W", value: metrics.walkability.score },
+                        { label: "G", value: metrics.greenspace.score },
+                        { label: "D", value: metrics.density.score },
+                      ]} 
+                    />
+                  </div>
+                  <UrbanButton 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => addToComparison(metrics)}
+                    className="h-8 text-[10px] font-black tracking-widest bg-primary/5 border-primary/10 hover:bg-primary/20"
+                    icon={<GitCompare className="w-3 h-3" />}
+                  >
+                    COMPARE
+                  </UrbanButton>
+                </div>
+              )}
+
             </div>
 
             <GlassDivider gradient={false} className="opacity-50" />

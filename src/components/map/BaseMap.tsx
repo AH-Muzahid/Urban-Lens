@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
-import Map, { NavigationControl } from "react-map-gl/maplibre";
+import Map from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { MapControls } from "@/components/layout/MapControls";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 
 // Dark matter style from Carto for a premium look
 const MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
@@ -58,8 +60,34 @@ export function BaseMap() {
         style={{ width: "100%", height: "100%" }}
         interactive={true}
       >
-        <NavigationControl position="bottom-right" showCompass={false} />
+        <MapControls />
       </Map>
+
+      {/* Map Info Overlay */}
+      <div className="absolute bottom-8 left-8 z-20 pointer-events-none">
+        <GlassPanel className="px-4 py-2 flex items-center gap-6">
+          <div className="flex flex-col">
+            <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-0.5">Latitude</span>
+            <span className="text-[10px] font-mono font-bold text-white tracking-tighter">
+              {viewState.latitude.toFixed(6)}
+            </span>
+          </div>
+          <div className="w-[1px] h-6 bg-white/5" />
+          <div className="flex flex-col">
+            <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-0.5">Longitude</span>
+            <span className="text-[10px] font-mono font-bold text-white tracking-tighter">
+              {viewState.longitude.toFixed(6)}
+            </span>
+          </div>
+          <div className="w-[1px] h-6 bg-white/5" />
+          <div className="flex flex-col">
+            <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-0.5">Zoom Level</span>
+            <span className="text-[10px] font-mono font-bold text-primary tracking-tighter">
+              {viewState.zoom.toFixed(2)}
+            </span>
+          </div>
+        </GlassPanel>
+      </div>
     </div>
   );
 }

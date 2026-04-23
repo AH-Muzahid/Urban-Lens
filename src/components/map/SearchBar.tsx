@@ -1,65 +1,145 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, MapPin, Loader2, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { GlassPanel } from "@/components/ui/GlassPanel";
+
+interface SearchResult {
+  place_id: number;
+  display_name: string;
+  lat: string;
+  lon: string;
+  type: string;
+}
 
 export function SearchBar() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
+  const searchLocations = async (val: string) => {
+    if (val.length < 3) {
+      setResults([]);
+      return;
+    }
     setLoading(true);
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(val)}&limit=5`);
       const data = await res.json();
-      
-      if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("lat", parseFloat(lat).toFixed(5));
-        params.set("lng", parseFloat(lon).toFixed(5));
-        params.set("z", "14"); 
-        router.push(`${pathname}?${params.toString()}`);
-      } else {
-        alert("Location not found.");
-      }
+      setResults(data);
+      setIsOpen(true);
     } catch (error) {
       console.error("Search failed", error);
-      alert("Search failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (query) searchLocations(query);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const handleSelect = (result: SearchResult) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("lat", parseFloat(result.lat).toFixed(5));
+    params.set("lng", parseFloat(result.lon).toFixed(5));
+    params.set("z", "14");
+    params.set("name", result.display_name.split(',')[0]);
+    router.push(`${pathname}?${params.toString()}`);
+    setQuery(result.display_name);
+    setIsOpen(false);
+  };
+
   return (
-    <form onSubmit={handleSearch} className="flex w-full items-center space-x-2 relative">
-      <input
-        type="text"
-        placeholder="Search location..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-        disabled={loading}
-      />
-      <button
-        type="submit"
-        className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 px-3 shrink-0 border border-border"
-        disabled={loading}
-      >
-        {loading ? (
-          <span className="animate-pulse">...</span>
-        ) : (
-          <Search className="h-4 w-4" />
+    <div ref={containerRef} className="relative w-full group">
+      <div className={cn(
+        "relative flex items-center bg-white/[0.03] border border-white/5 rounded-xl transition-all duration-300 px-4 h-10",
+        "focus-within:bg-white/[0.06] focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10",
+        isOpen && results.length > 0 ? "rounded-b-none border-b-transparent" : ""
+      )}>
+        <Search className={cn(
+          "w-4 h-4 transition-colors",
+          loading ? "text-primary animate-pulse" : "text-zinc-500 group-hover:text-zinc-400"
+        )} />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => query.length >= 3 && setIsOpen(true)}
+          placeholder="SEARCH GLOBAL ARCHIVES..."
+          className="flex-1 bg-transparent border-none focus:ring-0 text-[11px] font-black tracking-widest text-white placeholder:text-zinc-600 px-3 uppercase"
+        />
+        {query && (
+          <button 
+            onClick={() => { setQuery(""); setResults([]); }}
+            className="p-1 hover:bg-white/5 rounded-lg transition-all"
+          >
+            <X className="w-3 h-3 text-zinc-500" />
+          </button>
         )}
-        <span className="sr-only">Search</span>
-      </button>
-    </form>
+      </div>
+
+      <AnimatePresence>
+        {isOpen && results.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-full left-0 right-0 z-50"
+          >
+            <div className="bg-[#0B0F17] border border-white/5 border-t-transparent rounded-b-xl shadow-2xl overflow-hidden backdrop-blur-2xl">
+              <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+                {results.map((result) => (
+                  <button
+                    key={result.place_id}
+                    onClick={() => handleSelect(result)}
+                    className="w-full flex items-start gap-3 p-4 hover:bg-white/[0.03] transition-all text-left border-b border-white/[0.02] last:border-none group/item"
+                  >
+                    <div className="mt-1 w-6 h-6 rounded-lg bg-zinc-900 flex items-center justify-center border border-white/5 group-hover/item:border-primary/30 transition-all">
+                      <MapPin className="w-3 h-3 text-zinc-600 group-hover/item:text-primary transition-all" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[10px] font-black text-zinc-300 uppercase tracking-widest line-clamp-1 mb-0.5 group-hover/item:text-white">
+                        {result.display_name.split(',')[0]}
+                      </p>
+                      <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-wider line-clamp-1 opacity-70">
+                        {result.display_name.split(',').slice(1).join(',')}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <div className="p-2 bg-black/40 flex items-center justify-between">
+                <span className="text-[8px] font-black text-zinc-700 uppercase tracking-[0.2em] px-2">POWERED BY NOMINATIM</span>
+                <div className="flex gap-1 pr-2">
+                  {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 rounded-full bg-zinc-800" />)}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
