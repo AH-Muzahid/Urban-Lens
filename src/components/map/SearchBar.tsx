@@ -39,18 +39,18 @@ export function SearchBar() {
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex w-full items-center space-x-2 mt-4 relative">
+    <form onSubmit={handleSearch} className="flex w-full items-center space-x-2 relative">
       <input
         type="text"
         placeholder="Search location..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="flex h-10 w-full rounded-md border border-white/20 bg-black/50 px-3 py-2 text-sm text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-white/30 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+        className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
         disabled={loading}
       />
       <button
         type="submit"
-        className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 disabled:pointer-events-none disabled:opacity-50 bg-white text-black hover:bg-zinc-200 h-10 px-4 py-2 shrink-0 shadow-lg"
+        className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 px-3 shrink-0 border border-border"
         disabled={loading}
       >
         {loading ? (
