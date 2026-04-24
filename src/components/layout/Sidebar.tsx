@@ -8,11 +8,15 @@ import { cn } from "@/lib/utils";
 import { PremiumCard } from "@/components/ui/PremiumCard";
 
 export function Sidebar() {
-  const { metrics, loading, addToComparison, comparisonMetrics } = useDashboard();
+  const { metrics, loading, addToComparison, comparisonMetrics, isSidebarOpen } = useDashboard();
 
   if (!metrics && !loading) {
     return (
-      <aside className="w-[340px] border-r border-white/[0.04] bg-[#06080C] flex flex-col shrink-0 z-10 items-center justify-center p-12 text-center relative overflow-hidden">
+      <aside className={cn(
+        "absolute left-16 top-0 bottom-0 bg-[#06080C]/90 backdrop-blur-xl shadow-[20px_0_50px_rgba(0,0,0,0.6)] flex flex-col shrink-0 z-40 overflow-hidden transition-all duration-300",
+        isSidebarOpen ? "w-[340px] border-r border-white/[0.08]" : "w-0 border-0"
+      )}>
+        <div className="w-[340px] min-w-[340px] h-full flex flex-col items-center justify-center p-12 text-center">
         {/* Subtle background glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#E5B152]/5 rounded-full blur-[120px] pointer-events-none" />
         
@@ -43,12 +47,17 @@ export function Sidebar() {
             Initialize geographic node parameters to commence high-fidelity urban matrix analysis.
           </p>
         </motion.div>
+        </div>
       </aside>
     );
   }
 
   return (
-    <aside className="w-[340px] bg-[#06080C] flex flex-col overflow-hidden shrink-0 z-10 border-r border-white/[0.04] relative">
+    <aside className={cn(
+      "absolute left-16 top-0 bottom-0 bg-[#06080C]/90 backdrop-blur-xl shadow-[20px_0_50px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden shrink-0 z-40 transition-all duration-300",
+      isSidebarOpen ? "w-[340px] border-r border-white/[0.08]" : "w-0 border-0"
+    )}>
+      <div className="w-[340px] min-w-[340px] h-full flex flex-col relative">
       {/* Texture Layer */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150" />
       
@@ -258,6 +267,7 @@ export function Sidebar() {
             <span className="text-[7px] font-mono text-zinc-800 uppercase tracking-widest leading-none">© UrbanLens Corp</span>
             <span className="text-[6px] font-mono text-zinc-900 uppercase tracking-widest mt-1">v4.0.2-ALPHA</span>
           </div>
+        </div>
         </div>
       </div>
     </aside>

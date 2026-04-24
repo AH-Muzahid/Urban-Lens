@@ -8,6 +8,9 @@ interface DashboardContextType {
   comparisonMetrics: (UrbanMetrics | null)[];
   loading: boolean;
   error: string | null;
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  toggleSidebar: () => void;
   analyze: (lat: number, lng: number, radius: number, slot?: number, locationName?: string) => Promise<void>;
   addToComparison: (metrics: UrbanMetrics) => void;
   removeFromComparison: (index: number) => void;
@@ -21,6 +24,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [comparisonMetrics, setComparisonMetrics] = useState<(UrbanMetrics | null)[]>([null, null]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = useCallback(() => setIsSidebarOpen(prev => !prev), []);
 
   const analyze = useCallback(async (lat: number, lng: number, radius: number, slot?: number, locationName?: string) => {
     setLoading(true);
@@ -84,6 +90,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         comparisonMetrics, 
         loading, 
         error, 
+        isSidebarOpen,
+        setIsSidebarOpen,
+        toggleSidebar,
         analyze, 
         addToComparison, 
         removeFromComparison,
