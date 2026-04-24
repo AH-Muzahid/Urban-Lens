@@ -9,13 +9,12 @@ import { DataSources } from "@/components/ui/DataSources";
 
 export default function Home() {
   return (
-    <main className="flex h-screen w-full bg-background text-foreground overflow-hidden">
-      <NavSidebar />
-      <div className="flex flex-col flex-1 overflow-hidden relative">
-        <TopBar />
-        <div className="flex flex-1 overflow-hidden relative">
-          <Sidebar />
-          <div className="flex-1 relative h-full w-full">
+    <main className="flex flex-col h-screen w-full bg-background text-foreground overflow-hidden">
+      <TopBar />
+      <div className="flex flex-1 overflow-hidden relative">
+        <NavSidebar />
+        <Sidebar />
+        <div className="flex-1 relative h-full w-full">
             <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-muted-foreground bg-zinc-950">Initializing map...</div>}>
               <BaseMap />
             </Suspense>
@@ -39,7 +38,6 @@ export default function Home() {
             <DataSources />
           </div>
         </div>
-      </div>
     </main>
   );
 }

@@ -86,8 +86,7 @@ export function SearchBar() {
         isOpen && results.length > 0 ? "rounded-b-none border-b-transparent shadow-[0_10px_40px_-15px_rgba(0,0,0,0.5)]" : ""
       )}>
         <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-          <span className="text-gray-500 mr-2 font-mono">{">"}</span>
-          <Search className={cn("w-4 h-4 transition-colors", loading ? "text-yellow-500 animate-pulse" : "text-gray-400")} />
+          <span className="text-gray-500 font-mono text-lg">{">"}</span>
         </div>
         <input
           type="text"
@@ -96,7 +95,7 @@ export function SearchBar() {
           onFocus={() => query.length >= 3 && setIsOpen(true)}
           placeholder="Search any location..."
           aria-label="Search for urban locations"
-          className="w-full bg-transparent border-none focus:ring-0 text-gray-300 text-sm pl-12 pr-10 py-2 outline-none rounded-lg"
+          className="w-full bg-transparent border-none focus:ring-0 text-gray-300 text-sm pl-8 pr-10 py-2 outline-none rounded-lg"
         />
         
         <div className="absolute inset-y-0 right-3 flex items-center">

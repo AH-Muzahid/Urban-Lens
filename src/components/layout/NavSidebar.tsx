@@ -25,23 +25,16 @@ export function NavSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[84px] bg-[#06080C] flex flex-col items-center py-8 shrink-0 z-50 border-r border-white/[0.04] relative overflow-hidden h-screen">
+    <aside className="w-[72px] bg-[#06080C] flex flex-col items-center py-4 shrink-0 z-50 border-r border-white/[0.04] relative overflow-hidden h-screen">
       {/* Texture Layer */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150" />
       
       {/* Background Grid */}
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-grid-white/[0.02] [background-size:16px_16px]" />
       
-      {/* Top Menu Icon */}
-      <div className="mb-16 relative z-10">
-        <button className="text-white/20 hover:text-[#E5B152] transition-all duration-300 group">
-          <div className="w-6 h-[2px] bg-current mb-1 group-hover:w-4 transition-all" />
-          <div className="w-4 h-[2px] bg-current mb-1 group-hover:w-6 transition-all" />
-          <div className="w-6 h-[2px] bg-current group-hover:w-4 transition-all" />
-        </button>
-      </div>
 
-      <div className="flex flex-col gap-12 flex-1 relative z-10 w-full">
+
+      <div className="flex flex-col gap-2 flex-1 relative z-10 w-full mt-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           
@@ -50,7 +43,7 @@ export function NavSidebar() {
               key={item.id}
               href={item.href}
               className={cn(
-                "relative flex flex-col items-center gap-3 transition-all duration-500 group w-full",
+                "relative flex flex-col items-center justify-center gap-2 transition-all duration-500 group w-full py-3",
                 isActive ? "text-[#E5B152]" : "text-[#4A5568] hover:text-zinc-300"
               )}
             >
@@ -58,7 +51,7 @@ export function NavSidebar() {
               {isActive && (
                 <motion.div 
                   layoutId="nav-indicator"
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-10 bg-[#E5B152] shadow-[2px_0_15px_rgba(229,177,82,0.6)]"
+                  className="absolute left-0 top-0 bottom-0 my-auto w-[3px] h-full bg-[#E5B152] shadow-[2px_0_10px_rgba(229,177,82,0.5)] rounded-r-full"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
@@ -69,7 +62,7 @@ export function NavSidebar() {
               {isActive && (
                 <motion.div 
                   layoutId="nav-glow"
-                  className="absolute inset-0 bg-[#E5B152]/[0.02] blur-xl"
+                  className="absolute inset-0 bg-gradient-to-r from-[#E5B152]/[0.15] to-transparent"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -93,7 +86,7 @@ export function NavSidebar() {
               </div>
               
               <span className={cn(
-                "text-[8px] font-black tracking-[0.2em] uppercase transition-all duration-500 text-center",
+                "text-[9px] font-bold tracking-widest uppercase transition-all duration-500 text-center",
                 isActive ? "text-[#E5B152]" : "text-[#4A5568]"
               )}>
                 {item.label}
@@ -108,18 +101,24 @@ export function NavSidebar() {
         <Link
           href="/settings"
           className={cn(
-            "relative flex flex-col items-center gap-3 group w-full transition-all duration-500",
+            "relative flex flex-col items-center justify-center gap-2 group w-full py-3 transition-all duration-500",
             pathname === "/settings" ? "text-[#E5B152]" : "text-[#4A5568] hover:text-zinc-300"
           )}
         >
           {pathname === "/settings" && (
             <motion.div 
               layoutId="nav-indicator"
-              className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-10 bg-[#E5B152] shadow-[2px_0_15px_rgba(229,177,82,0.6)]"
+              className="absolute left-0 top-0 bottom-0 my-auto w-[3px] h-full bg-[#E5B152] shadow-[2px_0_10px_rgba(229,177,82,0.5)] rounded-r-full"
+            />
+          )}
+          {pathname === "/settings" && (
+            <motion.div 
+              layoutId="nav-glow"
+              className="absolute inset-0 bg-gradient-to-r from-[#E5B152]/[0.15] to-transparent"
             />
           )}
           <Settings className="w-5 h-5" />
-          <span className="text-[8px] font-black tracking-[0.2em] uppercase">
+          <span className="text-[9px] font-bold tracking-widest uppercase">
             SETTINGS
           </span>
         </Link>

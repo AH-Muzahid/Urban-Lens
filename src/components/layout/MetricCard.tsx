@@ -76,23 +76,19 @@ export function MetricCard({ index, title, value, subtext, availability, confide
 
       <div className="space-y-2 mb-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className={cn("w-2 h-2 rounded-full", getStatusColor(availability))} />
-            <span className="text-xs text-gray-400">Data coverage</span>
-          </div>
-          <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5", getStatusPillColor(availability))}>
+          <span className="text-xs text-gray-400">Data coverage</span>
+          <div className={cn("flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5", getStatusPillColor(availability))}>
+            <div className={cn("w-1.5 h-1.5 rounded-full", getStatusColor(availability))} />
             {availability}
-          </span>
+          </div>
         </div>
         
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className={cn("w-2 h-2 rounded-full", getStatusColor(confidence))} />
-            <span className="text-xs text-gray-400">Confidence</span>
-          </div>
-          <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5", getStatusPillColor(confidence))}>
+          <span className="text-xs text-gray-400">Confidence</span>
+          <div className={cn("flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5", getStatusPillColor(confidence))}>
+            <div className={cn("w-1.5 h-1.5 rounded-full", getStatusColor(confidence))} />
             {confidence}
-          </span>
+          </div>
         </div>
       </div>
 

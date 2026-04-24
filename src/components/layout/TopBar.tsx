@@ -25,19 +25,15 @@ export function TopBar() {
   };
 
   return (
-    <nav className="flex items-center justify-between bg-[#111827] px-4 py-2 border-b border-gray-800 z-40 relative">
+    <nav className="flex items-center justify-between bg-[#06080C] px-6 py-4 border-b border-white/[0.04] z-40 relative">
       <div className="flex items-center space-x-4">
-        <button className="text-gray-400 hover:text-white">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
-        
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-full border-2 border-yellow-500 flex items-center justify-center">
-            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+        <div className="flex items-center space-x-3">
+          <div className="relative w-8 h-8 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full border-[2px] border-[#E5B152]/30 border-dashed animate-[spin_10s_linear_infinite]" />
+            <div className="absolute inset-1 rounded-full border-[2.5px] border-[#E5B152] border-t-transparent animate-[spin_3s_linear_infinite]" />
+            <div className="w-2.5 h-2.5 bg-[#E5B152] rounded-full shadow-[0_0_10px_rgba(229,177,82,0.8)]" />
           </div>
-          <span className="text-white font-bold tracking-wider text-xl uppercase">Urbanlens</span>
+          <span className="text-white font-black tracking-widest text-xl uppercase">URBANLENS</span>
         </div>
       </div>
 

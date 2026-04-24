@@ -12,7 +12,7 @@ export function Sidebar() {
 
   if (!metrics && !loading) {
     return (
-      <aside className="w-[420px] border-r border-white/[0.04] bg-[#06080C] flex flex-col shrink-0 z-10 items-center justify-center p-12 text-center relative overflow-hidden">
+      <aside className="w-[340px] border-r border-white/[0.04] bg-[#06080C] flex flex-col shrink-0 z-10 items-center justify-center p-12 text-center relative overflow-hidden">
         {/* Subtle background glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#E5B152]/5 rounded-full blur-[120px] pointer-events-none" />
         
@@ -48,7 +48,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-[420px] bg-[#06080C] flex flex-col overflow-hidden shrink-0 z-10 border-r border-white/[0.04] relative">
+    <aside className="w-[340px] bg-[#06080C] flex flex-col overflow-hidden shrink-0 z-10 border-r border-white/[0.04] relative">
       {/* Texture Layer */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150" />
       
@@ -111,27 +111,39 @@ export function Sidebar() {
                 <span className="text-sm text-gray-400">Data Coverage</span>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-[#E5B152]">{metrics?.metadata.coverage ?? 0}%</span>
-                  <span className={cn(
-                    "text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5",
+                  <div className={cn(
+                    "flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5",
                     (metrics?.metadata.coverage ?? 0) > 80 ? "bg-emerald-500/10 text-emerald-400" :
-                    (metrics?.metadata.coverage ?? 0) > 40 ? "bg-amber-500/10 text-amber-400" :
-                    "bg-rose-500/10 text-rose-400"
+                    (metrics?.metadata.coverage ?? 0) > 40 ? "bg-[#E5B152]/10 text-[#E5B152]" :
+                    "bg-red-500/10 text-red-400"
                   )}>
+                    <div className={cn(
+                      "w-1.5 h-1.5 rounded-full",
+                      (metrics?.metadata.coverage ?? 0) > 80 ? "bg-emerald-400" :
+                      (metrics?.metadata.coverage ?? 0) > 40 ? "bg-[#E5B152]" :
+                      "bg-red-400"
+                    )} />
                     {(metrics?.metadata.coverage ?? 0) > 80 ? "High" : (metrics?.metadata.coverage ?? 0) > 40 ? "Medium" : "Low"}
-                  </span>
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Overall Confidence</span>
-                <span className={cn(
-                  "text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5",
+                <div className={cn(
+                  "flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5",
                   metrics?.metadata.confidence === "High" ? "bg-emerald-500/10 text-emerald-400" :
-                  metrics?.metadata.confidence === "Medium" ? "bg-amber-500/10 text-amber-400" :
-                  "bg-rose-500/10 text-rose-400"
+                  metrics?.metadata.confidence === "Medium" ? "bg-[#E5B152]/10 text-[#E5B152]" :
+                  "bg-red-500/10 text-red-400"
                 )}>
+                  <div className={cn(
+                    "w-1.5 h-1.5 rounded-full",
+                    metrics?.metadata.confidence === "High" ? "bg-emerald-400" :
+                    metrics?.metadata.confidence === "Medium" ? "bg-[#E5B152]" :
+                    "bg-red-400"
+                  )} />
                   {metrics?.metadata.confidence ?? "Unknown"}
-                </span>
+                </div>
               </div>
 
               <div className="flex items-center justify-between mt-3 pt-1">
