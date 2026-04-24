@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Search, MapPin, X } from "lucide-react";
+import { Search, MapPin, X, Target } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -74,21 +74,21 @@ export function SearchBar() {
   return (
     <div 
       ref={containerRef} 
-      className="relative w-full group"
+      className="relative flex-1 group"
       role="combobox"
       aria-expanded={isOpen}
       aria-haspopup="listbox"
       aria-controls="search-results"
     >
       <div className={cn(
-        "relative flex items-center bg-white/[0.03] border border-white/5 rounded-xl transition-all duration-300 px-4 h-10",
-        "focus-within:bg-white/[0.06] focus-within:border-[#E5B152]/50 focus-within:ring-4 focus-within:ring-[#E5B152]/10",
+        "relative flex items-center w-full bg-[#1f2937]/50 border border-gray-700 rounded-lg transition-all duration-300",
+        "focus-within:ring-1 focus-within:ring-yellow-500",
         isOpen && results.length > 0 ? "rounded-b-none border-b-transparent shadow-[0_10px_40px_-15px_rgba(0,0,0,0.5)]" : ""
       )}>
-        <Search className={cn(
-          "w-4 h-4 transition-colors",
-          loading ? "text-[#E5B152] animate-pulse" : "text-zinc-500 group-hover:text-zinc-400"
-        )} />
+        <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+          <span className="text-gray-500 mr-2 font-mono">{">"}</span>
+          <Search className={cn("w-4 h-4 transition-colors", loading ? "text-yellow-500 animate-pulse" : "text-gray-400")} />
+        </div>
         <input
           type="text"
           value={query}
@@ -96,10 +96,10 @@ export function SearchBar() {
           onFocus={() => query.length >= 3 && setIsOpen(true)}
           placeholder="Search any location..."
           aria-label="Search for urban locations"
-          className="flex-1 bg-transparent border-none focus:ring-0 text-xs font-bold text-white placeholder:text-zinc-700 px-3 uppercase tracking-wider"
+          className="w-full bg-transparent border-none focus:ring-0 text-gray-300 text-sm pl-12 pr-10 py-2 outline-none rounded-lg"
         />
         
-        <div className="flex items-center gap-2">
+        <div className="absolute inset-y-0 right-3 flex items-center">
           {query ? (
             <button 
               onClick={() => { setQuery(""); setResults([]); }}
@@ -109,9 +109,8 @@ export function SearchBar() {
               <X className="w-3 h-3 text-zinc-500" />
             </button>
           ) : (
-            <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.05]">
-              <span className="text-[8px] font-black text-zinc-600 tracking-tighter">⌘</span>
-              <span className="text-[8px] font-black text-zinc-600">K</span>
+            <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md border border-white/[0.05]">
+              <Target className="w-4 h-4 text-gray-500" />
             </div>
           )}
         </div>

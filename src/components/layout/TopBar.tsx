@@ -2,9 +2,9 @@
 
 import { Suspense, useState } from "react";
 import { SearchBar } from "@/components/map/SearchBar";
-import { HelpCircle, User, Hexagon, Bell, ChevronDown, Compass } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useDashboard } from "@/context/DashboardContext";
+import { Compass } from "lucide-react";
 
 export function TopBar() {
   const [radius, setRadius] = useState("500");
@@ -25,84 +25,76 @@ export function TopBar() {
   };
 
   return (
-    <header className="h-16 border-b border-white/[0.05] bg-[#06080C]/80 backdrop-blur-3xl flex items-center justify-between px-8 z-40 relative overflow-hidden">
-      {/* Background Grid */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-grid-white/[0.02] [background-size:24px_24px]" />
-      
-      <div className="flex items-center gap-12 relative z-10">
-        {/* Logo Section */}
-        <div className="flex items-center gap-3 group cursor-pointer">
-          <div className="relative">
-            <Hexagon className="w-8 h-8 text-[#E5B152] fill-[#E5B152]/10 transition-transform group-hover:rotate-90 duration-700" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
-            </div>
+    <nav className="flex items-center justify-between bg-[#111827] px-4 py-2 border-b border-gray-800 z-40 relative">
+      <div className="flex items-center space-x-4">
+        <button className="text-gray-400 hover:text-white">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-full border-2 border-yellow-500 flex items-center justify-center">
+            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
           </div>
-          <div className="flex flex-col">
-            <h1 className="text-sm font-black tracking-[0.3em] text-white uppercase leading-none">UrbanLens</h1>
-            <span className="text-[6px] font-black text-[#E5B152] uppercase tracking-[0.5em] mt-1.5 opacity-50">Intelligence Matrix</span>
-          </div>
+          <span className="text-white font-bold tracking-wider text-xl uppercase">Urbanlens</span>
         </div>
+      </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-4">
-          <div className="w-[360px] relative group">
-            <Suspense fallback={<div className="h-10 bg-white/[0.03] rounded-xl animate-pulse" />}>
-              <SearchBar />
-            </Suspense>
-          </div>
-          
-          <div className="flex items-center gap-3 bg-white/[0.02] border border-white/5 rounded-[0.9rem] h-10 px-4 hover:bg-white/[0.04] hover:border-white/10 transition-all group cursor-pointer relative">
-            <Compass className="w-3.5 h-3.5 text-[#E5B152]/70 group-hover:rotate-180 transition-transform duration-1000" />
-            <span className="text-[9px] font-black text-white uppercase tracking-[0.2em]">{radius}M Radius</span>
-            <ChevronDown className="w-3 h-3 text-zinc-600 group-hover:text-zinc-400" />
-            <select 
-              value={radius} 
-              onChange={(e) => setRadius(e.target.value)}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              disabled={loading}
-            >
-              <option value="500">500m Analysis</option>
-              <option value="1000">1km Analysis</option>
-              <option value="2000">2km Analysis</option>
-            </select>
-          </div>
+      <div className="flex items-center space-x-3 flex-1 max-w-3xl px-10">
+        <Suspense fallback={<div className="flex-1 h-10 bg-[#1f2937]/50 rounded-lg animate-pulse" />}>
+          <SearchBar />
+        </Suspense>
 
-          <button 
-            onClick={handleAnalyze}
+        <button className="p-2 border border-gray-700 rounded-lg text-gray-400 hover:bg-gray-800 shrink-0">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 0V5m0 14v-3m7-7h-3m-14 0H5"></path>
+          </svg>
+        </button>
+
+        <div className="relative min-w-[140px] shrink-0">
+          <select 
+            value={radius}
+            onChange={(e) => setRadius(e.target.value)}
             disabled={loading}
-            className="h-10 px-8 bg-[#E5B152]/5 border border-[#E5B152]/30 rounded-[0.9rem] text-[#E5B152] text-[9px] font-black uppercase tracking-[0.3em] hover:bg-[#E5B152] hover:text-black transition-all shadow-[0_0_20px_rgba(229,177,82,0.05)] active:scale-95 disabled:opacity-20"
+            className="appearance-none w-full bg-[#E5B152]/10 border border-[#E5B152]/30 text-[#E5B152] font-medium text-sm rounded-lg px-9 py-2 focus:ring-1 focus:ring-[#E5B152] outline-none"
           >
-            {loading ? "Processing..." : "Analyze Matrix"}
-          </button>
+            <option value="500">500m Radius</option>
+            <option value="1000">1000m Radius</option>
+            <option value="2000">2000m Radius</option>
+          </select>
+          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+            <Compass className="w-4 h-4 text-[#E5B152]" />
+          </div>
+          <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+            <svg className="w-4 h-4 text-[#E5B152]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
         </div>
+
+        <button 
+          onClick={handleAnalyze}
+          disabled={loading}
+          className="shrink-0 bg-transparent border border-[#E5B152] text-[#E5B152] px-6 py-2 rounded-lg text-sm font-bold tracking-widest hover:bg-[#E5B152]/10 transition-all disabled:opacity-50"
+        >
+          {loading ? "PROCESSING..." : "ANALYZE MATRIX"}
+        </button>
       </div>
 
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <button className="w-9 h-9 flex items-center justify-center text-zinc-600 hover:text-white transition-all hover:bg-white/[0.03] rounded-xl">
-            <HelpCircle className="w-4 h-4" />
-          </button>
-          <button className="w-9 h-9 flex items-center justify-center text-zinc-600 hover:text-white transition-all hover:bg-white/[0.03] rounded-xl relative">
-            <Bell className="w-4 h-4" />
-            <div className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[#E5B152] rounded-full border-2 border-[#06080C]" />
-          </button>
-        </div>
-        
-        <div className="h-8 w-[1px] bg-white/[0.05]" />
-        
-        <div className="flex items-center gap-3.5 pl-2 group cursor-pointer">
-          <div className="text-right hidden sm:block">
-            <p className="text-[9px] font-black text-white uppercase tracking-[0.15em] leading-none group-hover:text-[#E5B152] transition-colors">Enterprise AI</p>
-            <p className="text-[7px] font-bold text-zinc-600 uppercase tracking-widest mt-1.5">Alpha Access</p>
-          </div>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center group-hover:border-[#E5B152]/40 transition-all overflow-hidden">
-            <div className="w-full h-full bg-[#E5B152]/10 flex items-center justify-center">
-              <User className="w-4 h-4 text-[#E5B152]/60 group-hover:text-[#E5B152] transition-colors" />
-            </div>
-          </div>
+      <div className="flex items-center space-x-4">
+        <button className="text-gray-400 hover:text-white">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z"></path>
+          </svg>
+        </button>
+        <button className="text-gray-400 hover:text-white text-xl font-medium">?</button>
+        <div className="w-8 h-8 bg-gray-700 rounded-full border border-gray-600 flex items-center justify-center overflow-hidden">
+            <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path>
+            </svg>
         </div>
       </div>
-    </header>
+    </nav>
   );
 }

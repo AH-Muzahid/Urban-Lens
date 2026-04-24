@@ -7,40 +7,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MapControls } from "@/components/layout/MapControls";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
-// Dark matter style from Carto for a premium look (using raster tiles to avoid vector tile fetch errors)
-const MAP_STYLE: any = {
-  version: 8,
-  sources: {
-    "carto-dark": {
-      type: "raster",
-      tiles: [
-        "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-        "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-        "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-        "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-      ],
-      tileSize: 256,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    },
-  },
-  layers: [
-    {
-      id: "background",
-      type: "background",
-      paint: {
-        "background-color": "#0a0a0a"
-      }
-    },
-    {
-      id: "carto-dark-layer",
-      type: "raster",
-      source: "carto-dark",
-      minzoom: 0,
-      maxzoom: 20,
-    },
-  ],
-};
+// Carto Dark Matter vector tiles (MapLibre compatible)
+const MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
 interface ViewState {
   longitude: number;
@@ -91,7 +59,7 @@ export function BaseMap() {
   }, [viewState, pathname, router, searchParams]);
 
   return (
-    <div className="w-full h-full relative">
+    <div className="absolute inset-0 z-0">
       <Map
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}

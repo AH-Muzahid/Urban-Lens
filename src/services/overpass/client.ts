@@ -37,16 +37,17 @@ export async function fetchFromOverpass(query: string): Promise<OverpassResponse
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "Accept": "application/json",
+        "Accept": "*/*",
         "User-Agent": "UrbanLens/1.0 (contact: dev@urbanlens.example.com)",
       },
       body: `data=${encodeURIComponent(query)}`,
-      // Next.js caching: revalidate every 1 hour (3600 seconds) to reduce load on OSM
-      next: { revalidate: 3600 },
+      cache: "no-store",
     });
 
     if (!response.ok) {
-      throw new OverpassError(`Overpass API responded with status: ${response.status}`, response.status);
+      const errorText = await response.text();
+      console.error("Overpass API Error Response:", errorText);
+      throw new OverpassError(`Overpass API responded with status: ${response.status}. Body: ${errorText.substring(0, 200)}`, response.status);
     }
 
     const data = (await response.json()) as OverpassResponse;

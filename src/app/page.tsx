@@ -15,7 +15,7 @@ export default function Home() {
         <TopBar />
         <div className="flex flex-1 overflow-hidden relative">
           <Sidebar />
-          <div className="flex-1 relative">
+          <div className="flex-1 relative h-full w-full">
             <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-muted-foreground bg-zinc-950">Initializing map...</div>}>
               <BaseMap />
             </Suspense>

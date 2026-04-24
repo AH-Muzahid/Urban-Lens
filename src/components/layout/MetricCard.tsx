@@ -29,19 +29,19 @@ export function MetricCard({ index, title, value, subtext, availability, confide
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "High": return "bg-emerald-500";
-      case "Medium": return "bg-amber-500";
-      case "Low": return "bg-red-500";
+      case "High": return "bg-emerald-400";
+      case "Medium": return "bg-[#E5B152]";
+      case "Low": return "bg-red-400";
       default: return "bg-zinc-500";
     }
   };
 
-  const getStatusText = (status: string) => {
+  const getStatusPillColor = (status: string) => {
     switch (status) {
-      case "High": return "text-emerald-500";
-      case "Medium": return "text-amber-500";
-      case "Low": return "text-red-500";
-      default: return "text-zinc-500";
+      case "High": return "bg-emerald-500/10 text-emerald-400";
+      case "Medium": return "bg-[#E5B152]/10 text-[#E5B152]";
+      case "Low": return "bg-red-500/10 text-red-400";
+      default: return "bg-zinc-500/10 text-zinc-400";
     }
   };
 
@@ -50,106 +50,54 @@ export function MetricCard({ index, title, value, subtext, availability, confide
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: (index || 0) * 0.1 }}
-      className="group/card relative rounded-sm border border-white/[0.04] bg-[#0D1117]/40 p-6 transition-all duration-500 hover:border-[#E5B152]/30 hover:bg-[#0D1117]/80 overflow-hidden"
+      className="rounded-xl border border-white/[0.08] bg-[#0A0E17] p-5 overflow-hidden"
     >
-      {/* Background Grid Pattern */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[radial-gradient(#E5B152_1px,transparent_1px)] [background-size:16px_16px]" />
+      <div className="flex items-center gap-2 mb-4">
+        {isWalkability && <Activity className="w-4 h-4 text-[#E5B152]" />}
+        {isGreenspace && <TreeDeciduous className="w-4 h-4 text-emerald-400" />}
+        {isTransit && <TrainFront className="w-4 h-4 text-blue-400" />}
+        {isDensity && <Target className="w-4 h-4 text-purple-400" />}
+        {!isWalkability && !isGreenspace && !isTransit && !isDensity && <Database className="w-4 h-4 text-[#E5B152]" />}
+        <span className="text-xs font-bold text-[#E5B152] uppercase tracking-wider">{title}</span>
+      </div>
+
+      <div className="flex items-baseline gap-2 mb-2">
+        <span className="text-4xl font-semibold text-white">{value}</span>
+        {title === "WALKABILITY" && <span className="text-lg text-gray-300">amenities</span>}
+      </div>
+
+      <p className="text-sm text-gray-400 mb-4">{subtext}</p>
       
-      {/* Scanning Light Effect */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-0 group-hover/card:opacity-100 transition-opacity duration-1000">
-        <motion.div 
-          animate={{ y: ["-100%", "200%"] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-          className="w-full h-32 bg-gradient-to-b from-transparent via-[#E5B152]/[0.05] to-transparent"
-        />
-      </div>
+      <div className="h-px bg-white/[0.08] w-full mb-4" />
 
-      {/* Decorative Corners */}
-      <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-white/[0.1] group-hover/card:border-[#E5B152]/40 transition-colors" />
-      <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-white/[0.1] group-hover/card:border-[#E5B152]/40 transition-colors" />
-
-      {/* Icon and Title */}
-      <div className="flex items-center justify-between mb-8 relative z-10">
-        <div className="flex items-center gap-3">
-          <div className={cn(
-            "w-9 h-9 rounded-sm flex items-center justify-center transition-all duration-500 group-hover/card:scale-110 border border-white/[0.05] group-hover/card:border-[#E5B152]/30",
-            isWalkability ? "text-amber-500 bg-amber-500/5" :
-            isGreenspace ? "text-emerald-500 bg-emerald-500/5" :
-            isTransit ? "text-blue-500 bg-blue-500/5" :
-            "text-[#E5B152] bg-[#E5B152]/5"
-          )}>
-            {isWalkability && <Activity className="w-4 h-4" />}
-            {isGreenspace && <TreeDeciduous className="w-4 h-4" />}
-            {isTransit && <TrainFront className="w-4 h-4" />}
-            {isDensity && <Target className="w-4 h-4" />}
-            {!isWalkability && !isGreenspace && !isTransit && !isDensity && <Database className="w-4 h-4" />}
-          </div>
-          <div className="flex flex-col">
-            <h3 className="text-[10px] font-black tracking-[0.4em] text-zinc-500 uppercase group-hover/card:text-white transition-colors">{title}</h3>
-            {index && <span className="text-[8px] font-mono text-zinc-700 tracking-wider uppercase">UNIT-0{index} {" // "} SYST-SEC-0{index}</span>}
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#E5B152]/20 group-hover/card:bg-[#E5B152] transition-all animate-pulse" />
-          <span className="text-[7px] font-black text-zinc-800 group-hover/card:text-zinc-600 uppercase tracking-widest transition-colors font-mono">STABLE</span>
-        </div>
-      </div>
-
-      {/* Value and Unit */}
-      <div className="flex items-baseline gap-4 mb-10 relative z-10">
-        <span className="text-5xl font-black text-white tracking-tighter leading-none group-hover/card:text-[#E5B152] transition-colors duration-500">
-          {value}
-        </span>
-        {subtext && (
-          <div className="flex flex-col">
-            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] group-hover/card:text-zinc-400 transition-colors">{subtext}</span>
-            <div className="h-[2px] w-full bg-white/[0.05] mt-1 group-hover/card:bg-[#E5B152]/20 transition-all overflow-hidden">
-               <motion.div 
-                 initial={{ x: "-100%" }}
-                 animate={{ x: "0%" }}
-                 className="h-full w-full bg-[#E5B152]/40"
-               />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Status Indicators */}
-      <div className="grid grid-cols-2 gap-4 mb-8 border-t border-white/[0.03] pt-8 relative z-10">
-        <div className="flex flex-col gap-2">
+      <div className="space-y-3 mb-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className={cn("w-1 h-1 rounded-full", getStatusColor(availability))} />
-            <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Coverage</span>
+            <div className={cn("w-2 h-2 rounded-full", getStatusColor(availability))} />
+            <span className="text-sm text-gray-300">Data coverage</span>
           </div>
-          <span className={cn("text-[10px] font-black uppercase tracking-[0.2em] font-mono", getStatusText(availability))}>
+          <span className={cn("text-xs font-medium px-2.5 py-0.5 rounded-full", getStatusPillColor(availability))}>
             {availability}
           </span>
         </div>
-        <div className="flex flex-col gap-2 pl-4 border-l border-white/[0.03]">
+        
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className={cn("w-1 h-1 rounded-full", getStatusColor(confidence))} />
-            <span className="text-[8px] font-black text-zinc-600 uppercase tracking-widest">Trust Index</span>
+            <div className={cn("w-2 h-2 rounded-full", getStatusColor(confidence))} />
+            <span className="text-sm text-gray-300">Confidence</span>
           </div>
-          <span className={cn("text-[10px] font-black uppercase tracking-[0.2em] font-mono", getStatusText(confidence))}>
+          <span className={cn("text-xs font-medium px-2.5 py-0.5 rounded-full", getStatusPillColor(confidence))}>
             {confidence}
           </span>
         </div>
       </div>
 
-      {/* Show Details Toggle */}
       <button 
-        onClick={() => setExpanded(!expanded)}
-        className="group/toggle w-full pt-4 transition-all flex items-center justify-between relative z-10"
+        onClick={() => setExpanded(!expanded)} 
+        className="text-sm text-gray-400 hover:text-gray-300 flex items-center gap-1 transition-colors"
       >
-        <span className="text-[10px] font-bold text-zinc-500 group-hover/toggle:text-white transition-colors uppercase tracking-[0.2em]">
-          {expanded ? "Hide details" : "Show details"}
-        </span>
-        <motion.div
-          animate={{ rotate: expanded ? 180 : 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <ChevronDown className="w-3.5 h-3.5 text-zinc-700 group-hover/toggle:text-[#E5B152] transition-colors" />
-        </motion.div>
+        Show details
+        <ChevronDown className={cn("w-4 h-4 transition-transform", expanded && "rotate-180")} />
       </button>
 
       {/* Expanded Details */}
@@ -159,40 +107,30 @@ export function MetricCard({ index, title, value, subtext, availability, confide
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden relative z-10"
+            className="overflow-hidden"
           >
-            <div className="pt-8 space-y-8">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Fingerprint className="w-3.5 h-3.5 text-[#E5B152]/30" />
-                  <p className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em]">Neural Sources</p>
-                </div>
-                <div className="grid grid-cols-1 gap-2">
+            <div className="pt-4 space-y-4">
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Sources</p>
+                <div className="flex flex-wrap gap-2">
                   {details.sources.map((s, i) => (
-                    <div key={i} className="flex items-center gap-3 px-3 py-2 bg-white/[0.01] border border-white/[0.03] rounded-sm group/source">
-                      <div className="w-1 h-1 rounded-full bg-[#E5B152]/20 group-hover/source:bg-[#E5B152] transition-colors" />
-                      <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest font-mono">
-                        {s}
-                      </span>
-                    </div>
+                    <span key={i} className="text-xs px-2 py-1 bg-white/[0.03] border border-white/[0.05] rounded text-gray-300">
+                      {s}
+                    </span>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Zap className="w-3.5 h-3.5 text-[#E5B152]/30" />
-                  <p className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.3em]">Heuristic Path</p>
-                </div>
-                <p className="text-[10px] text-zinc-400 font-bold leading-relaxed uppercase tracking-wider italic bg-white/[0.01] p-3 border border-dashed border-white/[0.05] rounded-sm">
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Methodology</p>
+                <p className="text-sm text-gray-300 leading-relaxed">
                   {details.method}
                 </p>
               </div>
 
-              <div className="p-5 bg-[#E5B152]/[0.02] border border-[#E5B152]/10 flex gap-4 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-[1px] h-full bg-[#E5B152]/30" />
-                <Info className="w-4 h-4 text-[#E5B152]/40 shrink-0 mt-0.5" />
-                <p className="text-[9px] text-[#E5B152]/70 leading-relaxed font-black uppercase tracking-widest">
+              <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded flex gap-3">
+                <Info className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                <p className="text-xs text-blue-200 leading-relaxed">
                   {details.limitations}
                 </p>
               </div>
