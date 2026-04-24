@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface GlassBadgeProps {
   children: React.ReactNode;
@@ -19,13 +20,34 @@ export function GlassBadge({ children, variant = "primary", className, icon }: G
   };
 
   return (
-    <div className={cn(
-      "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[9px] font-black tracking-wider uppercase",
-      variants[variant],
-      className
-    )}>
-      {icon && <span className="shrink-0">{icon}</span>}
-      {children}
-    </div>
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className={cn(
+        "relative inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[9px] font-black tracking-wider uppercase overflow-hidden",
+        variants[variant],
+        className
+      )}
+    >
+      {/* Shimmer Effect */}
+      <motion.div
+        animate={{
+          x: ["-100%", "100%"],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 3,
+          ease: "linear",
+        }}
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12"
+      />
+      
+      <span className="relative z-10 shrink-0 flex items-center">
+        {icon}
+      </span>
+      <span className="relative z-10">
+        {children}
+      </span>
+    </motion.div>
   );
 }

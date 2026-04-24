@@ -11,6 +11,8 @@ interface UrbanButtonProps {
   size?: "sm" | "md" | "lg";
   icon?: React.ReactNode;
   disabled?: boolean;
+  ariaLabel?: string;
+  title?: string;
 }
 
 
@@ -21,7 +23,9 @@ export function UrbanButton({
   variant = "primary",
   size = "md",
   icon,
-  disabled
+  disabled,
+  ariaLabel,
+  title
 }: UrbanButtonProps) {
   const variants = {
     primary: "bg-primary text-black hover:bg-primary/90 shadow-[0_0_20px_rgba(255,184,0,0.2)] disabled:opacity-50 disabled:pointer-events-none",
@@ -41,8 +45,10 @@ export function UrbanButton({
       whileTap={!disabled ? { scale: 0.98 } : {}}
       onClick={onClick}
       disabled={disabled}
+      aria-label={ariaLabel}
+      title={title}
       className={cn(
-        "relative inline-flex items-center justify-center gap-2 rounded-xl font-black uppercase tracking-widest transition-all duration-200 overflow-hidden",
+        "relative inline-flex items-center justify-center gap-2 rounded-xl font-black uppercase tracking-widest transition-all duration-200 overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black",
         variants[variant],
         sizes[size],
         className

@@ -3,6 +3,9 @@ import { BaseMap } from "@/components/map/BaseMap";
 import { TopBar } from "@/components/layout/TopBar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NavSidebar } from "@/components/layout/NavSidebar";
+import { SummaryBar } from "@/components/layout/SummaryBar";
+import { MapOverlays } from "@/components/map/MapOverlays";
+import { DataSources } from "@/components/ui/DataSources";
 
 export default function Home() {
   return (
@@ -30,6 +33,10 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
+            <SummaryBar />
+            <MapOverlays />
+            <DataSources />
           </div>
         </div>
       </div>

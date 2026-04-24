@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchFromOverpass } from "@/services/overpass/client";
-import { buildAmenitiesQuery, buildGreenspaceQuery } from "@/services/overpass/queries";
 import { calculateMetrics } from "@/services/metrics/processor";
 
 export async function GET(req: NextRequest) {

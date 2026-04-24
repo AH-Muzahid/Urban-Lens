@@ -1,12 +1,12 @@
 "use client";
 
 import { 
-  Map as MapIcon, 
-  GitCompare, 
-  Zap, 
-  Bookmark, 
-  History, 
-  Settings 
+  Search, 
+  Database, 
+  BarChart3, 
+  Settings,
+  LayoutGrid,
+  Menu
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -14,19 +14,24 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { icon: MapIcon, label: "EXPLORE", id: "explore", href: "/" },
-  { icon: GitCompare, label: "COMPARE", id: "compare", href: "/compare" },
-  { icon: Zap, label: "WHAT-IF", id: "what-if", href: "/what-if" },
-  { icon: Bookmark, label: "BOOKMARKS", id: "bookmarks", href: "/bookmarks" },
-  { icon: History, label: "HISTORY", id: "history", href: "/history" },
+  { icon: LayoutGrid, label: "HUB", id: "hub", href: "/" },
+  { icon: Search, label: "ANALYZE", id: "analyze", href: "/analyze" },
+  { icon: Database, label: "LAYERS", id: "layers", href: "/layers" },
+  { icon: BarChart3, label: "STATS", id: "stats", href: "/stats" },
 ];
 
 export function NavSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[80px] border-r border-zinc-800 bg-[#0B0F17] flex flex-col items-center py-6 shrink-0 z-30">
-      <div className="flex flex-col gap-6 flex-1">
+    <aside className="w-20 bg-[#06080C] flex flex-col items-center py-6 shrink-0 z-30 border-r border-white/[0.03]">
+      <div className="mb-12">
+        <button className="w-12 h-12 flex items-center justify-center text-zinc-600 hover:text-white transition-colors">
+          <Menu className="w-6 h-6" />
+        </button>
+      </div>
+
+      <div className="flex flex-col gap-8 flex-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           
@@ -36,24 +41,28 @@ export function NavSidebar() {
               href={item.href}
               className={cn(
                 "relative flex flex-col items-center gap-1.5 transition-all duration-300 group",
-                isActive ? "text-primary" : "text-zinc-500 hover:text-zinc-200"
+                isActive ? "text-primary" : "text-zinc-600 hover:text-zinc-300"
               )}
             >
-              {/* Active Indicator Bar */}
-              {isActive && (
-                <motion.div 
-                  layoutId="active-nav"
-                  className="absolute -left-6 w-1 h-8 bg-primary rounded-r-full shadow-[0_0_15px_rgba(255,184,0,0.5)]" 
-                />
-              )}
-
               <div className={cn(
-                "p-2.5 rounded-xl transition-all duration-300",
-                isActive ? "bg-primary/10 text-primary" : "group-hover:bg-white/5"
+                "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 relative",
+                isActive 
+                  ? "bg-primary/10 border border-primary/20 shadow-[0_0_15px_rgba(255,184,0,0.1)]" 
+                  : "group-hover:bg-white/[0.03]"
               )}>
-                <item.icon className="w-5 h-5" />
+                <item.icon className={cn("w-5 h-5", isActive ? "text-primary" : "text-zinc-600 group-hover:text-zinc-300")} />
+                
+                {isActive && (
+                  <motion.div 
+                    layoutId="nav-glow"
+                    className="absolute -left-5 w-1 h-6 bg-primary rounded-r-full shadow-[0_0_15px_rgba(255,184,0,0.5)]" 
+                  />
+                )}
               </div>
-              <span className="text-[8px] font-black tracking-tighter uppercase opacity-60">
+              <span className={cn(
+                "text-[8px] font-black tracking-widest uppercase transition-all",
+                isActive ? "opacity-100" : "opacity-0 group-hover:opacity-40"
+              )}>
                 {item.label}
               </span>
             </Link>
@@ -61,9 +70,11 @@ export function NavSidebar() {
         })}
       </div>
 
-      <button className="text-zinc-600 hover:text-zinc-200 transition-colors p-2 rounded-xl hover:bg-white/5">
-        <Settings className="w-5 h-5" />
-      </button>
+      <div className="mt-auto">
+        <button className="w-10 h-10 flex items-center justify-center rounded-xl text-zinc-600 hover:text-white hover:bg-white/[0.03] transition-all group">
+          <Settings className="w-5 h-5 group-hover:rotate-45 transition-transform duration-500" />
+        </button>
+      </div>
     </aside>
   );
 }

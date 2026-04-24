@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Search, MapPin, Loader2, X } from "lucide-react";
+import { Search, MapPin, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { GlassPanel } from "@/components/ui/GlassPanel";
+
 
 interface SearchResult {
   place_id: number;
@@ -72,7 +72,14 @@ export function SearchBar() {
   };
 
   return (
-    <div ref={containerRef} className="relative w-full group">
+    <div 
+      ref={containerRef} 
+      className="relative w-full group"
+      role="combobox"
+      aria-expanded={isOpen}
+      aria-haspopup="listbox"
+      aria-controls="search-results"
+    >
       <div className={cn(
         "relative flex items-center bg-white/[0.03] border border-white/5 rounded-xl transition-all duration-300 px-4 h-10",
         "focus-within:bg-white/[0.06] focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10",
@@ -88,16 +95,16 @@ export function SearchBar() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => query.length >= 3 && setIsOpen(true)}
           placeholder="SEARCH GLOBAL ARCHIVES..."
+          aria-label="Search for urban locations"
           className="flex-1 bg-transparent border-none focus:ring-0 text-[11px] font-black tracking-widest text-white placeholder:text-zinc-600 px-3 uppercase"
         />
-        {query && (
           <button 
             onClick={() => { setQuery(""); setResults([]); }}
+            aria-label="Clear search query"
             className="p-1 hover:bg-white/5 rounded-lg transition-all"
           >
             <X className="w-3 h-3 text-zinc-500" />
           </button>
-        )}
       </div>
 
       <AnimatePresence>
@@ -108,12 +115,18 @@ export function SearchBar() {
             exit={{ opacity: 0, y: -10 }}
             className="absolute top-full left-0 right-0 z-50"
           >
-            <div className="bg-[#0B0F17] border border-white/5 border-t-transparent rounded-b-xl shadow-2xl overflow-hidden backdrop-blur-2xl">
+            <div 
+              id="search-results"
+              role="listbox"
+              className="bg-[#0B0F17] border border-white/5 border-t-transparent rounded-b-xl shadow-2xl overflow-hidden backdrop-blur-2xl"
+            >
               <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
                 {results.map((result) => (
                   <button
                     key={result.place_id}
                     onClick={() => handleSelect(result)}
+                    role="option"
+                    aria-selected={false}
                     className="w-full flex items-start gap-3 p-4 hover:bg-white/[0.03] transition-all text-left border-b border-white/[0.02] last:border-none group/item"
                   >
                     <div className="mt-1 w-6 h-6 rounded-lg bg-zinc-900 flex items-center justify-center border border-white/5 group-hover/item:border-primary/30 transition-all">

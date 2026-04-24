@@ -8,12 +8,13 @@ import { RadarChart } from "@/components/ui/RadarChart";
 import { PremiumCard } from "@/components/ui/PremiumCard";
 import { GlassBadge } from "@/components/ui/GlassBadge";
 import { MetricValue } from "@/components/ui/MetricValue";
-import { GitCompare, MapPin, Search, Globe, AlertTriangle } from "lucide-react";
+import { GitCompare, MapPin, Search, Globe, AlertTriangle, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UrbanButton } from "@/components/ui/UrbanButton";
 import Link from "next/link";
 
 import { BarChart } from "@/components/ui/BarChart";
+import { DataSources } from "@/components/ui/DataSources";
 
 export default function ComparePage() {
   const { comparisonMetrics, removeFromComparison, clearComparison } = useDashboard();
@@ -22,6 +23,8 @@ export default function ComparePage() {
   const metricsB = comparisonMetrics[1];
   const bothSelected = metricsA && metricsB;
   const hasMetrics = comparisonMetrics.some(m => m !== null);
+
+  const confidenceValue = (c: string) => parseInt(c) || 100;
 
   return (
     <main className="flex h-screen w-full bg-background text-foreground overflow-hidden">
@@ -60,26 +63,100 @@ export default function ComparePage() {
                 className="mb-12 overflow-hidden"
               >
                 <PremiumCard className="p-8 bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
-                  <div className="flex items-center gap-3 mb-8">
-                    <GitCompare className="w-4 h-4 text-primary" />
-                    <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Comparative Overview</h3>
-                  </div>
-                  <BarChart 
-                    data={[
-                      { label: "Walkability Index", valueA: metricsA.walkability.score, valueB: metricsB.walkability.score },
-                      { label: "Greenspace Access", valueA: metricsA.greenspace.score, valueB: metricsB.greenspace.score },
-                      { label: "Building Density", valueA: metricsA.density.score, valueB: metricsB.density.score },
-                    ]} 
-                  />
-
-                  {metricsA.metadata.radius !== metricsB.metadata.radius && (
-                    <div className="mt-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3">
-                      <AlertTriangle className="w-4 h-4 text-amber-500" />
-                      <p className="text-[9px] font-black text-amber-500/80 uppercase tracking-widest">
-                        Fairness Alert: Locations were analyzed with different radii ({metricsA.metadata.radius}m vs {metricsB.metadata.radius}m).
-                      </p>
+                  <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
+                    <div className="xl:col-span-2">
+                      <div className="flex items-center gap-3 mb-8">
+                        <GitCompare className="w-4 h-4 text-primary" />
+                        <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Comparative Metric Distribution</h3>
+                      </div>
+                      <BarChart 
+                        data={[
+                          { 
+                            label: "Walkability Index", 
+                            valueA: metricsA.walkability.score, 
+                            valueB: metricsB.walkability.score,
+                            confidenceA: confidenceValue(metricsA.metadata.confidence),
+                            confidenceB: confidenceValue(metricsB.metadata.confidence),
+                            description: "Measures pedestrian friendliness based on intersection density and amenity proximity."
+                          },
+                          { 
+                            label: "Greenspace Access", 
+                            valueA: metricsA.greenspace.score, 
+                            valueB: metricsB.greenspace.score,
+                            confidenceA: confidenceValue(metricsA.metadata.confidence),
+                            confidenceB: confidenceValue(metricsB.metadata.confidence),
+                            description: "Proportion of public parks and natural areas within reachable distance."
+                          },
+                          { 
+                            label: "Building Density", 
+                            valueA: metricsA.density.score, 
+                            valueB: metricsB.density.score,
+                            confidenceA: confidenceValue(metricsA.metadata.confidence),
+                            confidenceB: confidenceValue(metricsB.metadata.confidence),
+                            description: "Calculated structural footprints per square kilometer."
+                          },
+                        ]} 
+                      />
                     </div>
-                  )}
+                    
+                    <div className="flex flex-col items-center justify-center p-6 bg-white/[0.02] rounded-3xl border border-white/5">
+                      <div className="mb-6 text-center">
+                        <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Spatial Fingerprint</h4>
+                        <p className="text-[8px] text-zinc-600 font-bold uppercase tracking-widest italic">Overlaid comparison</p>
+                      </div>
+                      <RadarChart 
+                        size={220}
+                        dataA={[
+                          { label: "W", value: metricsA.walkability.score, fullLabel: "Walkability" },
+                          { label: "G", value: metricsA.greenspace.score, fullLabel: "Greenspace" },
+                          { label: "D", value: metricsA.density.score, fullLabel: "Density" },
+                        ]}
+                        dataB={[
+                          { label: "W", value: metricsB.walkability.score },
+                          { label: "G", value: metricsB.greenspace.score },
+                          { label: "D", value: metricsB.density.score },
+                        ]}
+                        confidenceA={confidenceValue(metricsA.metadata.confidence)}
+                        confidenceB={confidenceValue(metricsB.metadata.confidence)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Fairness Audit Section */}
+                  <div className="mt-12 pt-8 border-t border-white/5">
+                    <div className="flex items-center gap-2 mb-6">
+                      <Info className="w-4 h-4 text-zinc-500" />
+                      <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Integrity & Fairness Audit</h3>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {metricsA.metadata.radius !== metricsB.metadata.radius && (
+                        <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex items-start gap-4">
+                          <AlertTriangle className="w-5 h-5 text-amber-500 mt-1" />
+                          <div>
+                            <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">Scale Inconsistency</p>
+                            <p className="text-[9px] text-amber-500/60 font-bold leading-relaxed">
+                              Location A was analyzed at {metricsA.metadata.radius}m radius, while Location B used {metricsB.metadata.radius}m. 
+                              Direct density comparisons may be skewed by area differences.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {(Math.abs(confidenceValue(metricsA.metadata.confidence) - confidenceValue(metricsB.metadata.confidence)) > 20) && (
+                        <div className="p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10 flex items-start gap-4">
+                          <Info className="w-5 h-5 text-blue-500 mt-1" />
+                          <div>
+                            <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">Confidence Variance</p>
+                            <p className="text-[9px] text-blue-500/60 font-bold leading-relaxed">
+                              There is a significant gap in data reliability between these locations. 
+                              Location {confidenceValue(metricsA.metadata.confidence) > confidenceValue(metricsB.metadata.confidence) ? 'A' : 'B'} has higher quality source data.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </PremiumCard>
               </motion.div>
             )}
@@ -142,11 +219,12 @@ export default function ComparePage() {
                           <div className="hidden sm:block">
                             <RadarChart 
                               size={120} 
-                              data={[
+                              dataA={[
                                 { label: "W", value: m.walkability.score },
                                 { label: "G", value: m.greenspace.score },
                                 { label: "D", value: m.density.score },
                               ]} 
+                              confidenceA={confidenceValue(m.metadata.confidence)}
                             />
                           </div>
                         </div>
@@ -215,6 +293,8 @@ export default function ComparePage() {
               </p>
             </motion.div>
           )}
+
+          <DataSources />
         </div>
       </div>
     </main>
