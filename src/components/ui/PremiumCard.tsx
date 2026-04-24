@@ -8,10 +8,11 @@ interface PremiumCardProps {
   children: React.ReactNode;
   className?: string;
   hoverEffect?: boolean;
+  withGrid?: boolean;
   index?: number;
 }
 
-export function PremiumCard({ children, className, hoverEffect = true, index = 0 }: PremiumCardProps) {
+export function PremiumCard({ children, className, hoverEffect = true, withGrid = false, index = 0 }: PremiumCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   
   const mouseX = useMotionValue(0);
@@ -77,6 +78,11 @@ export function PremiumCard({ children, className, hoverEffect = true, index = 0
       
       {/* Subtle Bottom Glow on Hover */}
       <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-3/4 h-16 bg-primary/5 blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+      {/* Optional Background Grid */}
+      {withGrid && (
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-grid-white/[0.05] [background-size:20px_20px]" />
+      )}
 
       <div className="relative z-10">
         {children}

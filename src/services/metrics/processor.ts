@@ -1,48 +1,7 @@
 import * as turf from "@turf/turf";
 import { OverpassResponse } from "@/types/overpass";
 import { BENCHMARK_RANGES } from "@/data/benchmarks";
-
-export interface UrbanMetrics {
-  walkability: {
-    value: number; // Raw value (count)
-    score: number; // 0-100 score
-    label: string;
-    subtext: string;
-    details: {
-      sources: string[];
-      method: string;
-      limitations: string;
-    };
-  };
-  greenspace: {
-    value: number; // Raw value (%)
-    score: number; // 0-100 score
-    label: string;
-    subtext: string;
-    details: {
-      sources: string[];
-      method: string;
-      limitations: string;
-    };
-  };
-  density: {
-    value: number; // Raw value (count)
-    score: number; // 0-100 score
-    label: string;
-    subtext: string;
-    details: {
-      sources: string[];
-      method: string;
-      limitations: string;
-    };
-  };
-  metadata: {
-    coverage: number;
-    confidence: "High" | "Medium" | "Low";
-    locationName: string;
-    radius: number;
-  };
-}
+import { UrbanMetrics } from "@/types/metrics";
 
 function calculateScore(value: number, range: { min: number, max: number }): number {
   const score = ((value - range.min) / (range.max - range.min)) * 100;
@@ -51,27 +10,20 @@ function calculateScore(value: number, range: { min: number, max: number }): num
 
 export function calculateMetrics(
   data: OverpassResponse, 
-  _center: [number, number], // [lat, lng]
-
+  center: [number, number], // [lat, lng]
   radiusMeters: number
 ): UrbanMetrics {
   const elements = data.elements;
   
   // 1. Walkability Calculation
   const amenities = elements.filter(el => el.tags?.amenity || el.tags?.shop || el.tags?.leisure === "playground");
-  const amenityCounts: Record<string, number> = {};
-  amenities.forEach(el => {
-    const type = el.tags?.amenity || el.tags?.shop || "other";
-    amenityCounts[type] = (amenityCounts[type] || 0) + 1;
-  });
+  const schools = elements.filter(el => el.tags?.amenity === "school").length;
+  const hospitals = elements.filter(el => el.tags?.amenity === "hospital" || el.tags?.amenity === "clinic").length;
+  const shops = elements.filter(el => el.tags?.shop).length;
 
   const walkabilityValue = amenities.length;
   const walkabilityScore = calculateScore(walkabilityValue, BENCHMARK_RANGES.amenities);
-  const walkabilitySubtext = Object.entries(amenityCounts)
-    .sort((a, b) => b[1] - a[1]) // Sort by count
-    .slice(0, 3)
-    .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${v}`)
-    .join(" | ");
+  const walkabilitySubtext = `Schools: ${schools} | Hospitals: ${hospitals} | Shops: ${shops}`;
 
   // 2. Greenspace Calculation
   const greenElements = elements.filter(el => 
@@ -81,6 +33,7 @@ export function calculateMetrics(
     el.tags?.landuse === "meadow" ||
     el.tags?.natural === "wood"
   );
+  const parkCount = elements.filter(el => el.tags?.leisure === "park").length;
 
   let totalGreenAreaSqm = 0;
   greenElements.forEach(el => {
@@ -95,20 +48,38 @@ export function calculateMetrics(
       } catch {
         // Silently ignore invalid polygons
       }
-
     }
   });
 
   const totalRadiusAreaSqm = Math.PI * Math.pow(radiusMeters, 2);
   const greenspacePercentage = (totalGreenAreaSqm / totalRadiusAreaSqm) * 100;
   const greenspaceScore = calculateScore(greenspacePercentage, BENCHMARK_RANGES.greenAreaPct);
+  const greenspaceSubtext = `${parkCount} parks within radius | ${greenspacePercentage.toFixed(1)}% coverage`;
 
   // 3. Density Calculation
   const buildings = elements.filter(el => el.tags?.building);
   const buildingCount = buildings.length;
   const densityScore = calculateScore(buildingCount, BENCHMARK_RANGES.buildings);
+  const densitySubtext = `${buildingCount} structures detected | High Density`;
 
-  // 4. Metadata & Confidence
+  // 4. Transit Calculation
+  const transitStops = elements.filter(el => 
+    el.tags?.highway === "bus_stop" || 
+    el.tags?.railway === "station" || 
+    el.tags?.railway === "stop" ||
+    el.tags?.amenity === "bus_station" ||
+    el.tags?.public_transport === "stop_position" ||
+    el.tags?.public_transport === "platform"
+  );
+  const transitCount = transitStops.length;
+  const transitScore = calculateScore(transitCount, BENCHMARK_RANGES.transit);
+  
+  const railStations = transitStops.filter(el => el.tags?.railway === "station").length;
+  const busStops = transitStops.filter(el => el.tags?.highway === "bus_stop" || el.tags?.amenity === "bus_station").length;
+  
+  const transitSubtext = `${railStations} Stations | ${busStops} Bus Stops`;
+
+  // 5. Metadata & Confidence
   const hasBuildings = buildingCount > 0;
   const hasAmenities = walkabilityValue > 0;
   
@@ -123,10 +94,10 @@ export function calculateMetrics(
       value: walkabilityValue,
       score: walkabilityScore,
       label: `${walkabilityScore}/100`,
-      subtext: walkabilitySubtext || "No major amenities found",
+      subtext: walkabilitySubtext,
       details: {
         sources: ["OSM Nodes", "Shop Tags", "Amenity Tags"],
-        method: `Count of POIs normalized against global urban benchmarks.`,
+        method: "Count of POIs normalized against global urban benchmarks.",
         limitations: "Under-mapped areas may show artificially low scores."
       }
     },
@@ -134,7 +105,7 @@ export function calculateMetrics(
       value: greenspacePercentage,
       score: greenspaceScore,
       label: `${greenspaceScore}/100`,
-      subtext: `${greenspacePercentage.toFixed(1)}% area coverage`,
+      subtext: greenspaceSubtext,
       details: {
         sources: ["OSM Polygons (Park, Landuse, Natural)"],
         method: "Area ratio normalized against urban greenspace benchmarks.",
@@ -145,19 +116,31 @@ export function calculateMetrics(
       value: buildingCount,
       score: densityScore,
       label: buildingCount > 0 ? `${densityScore}/100` : "Low Data",
-      subtext: buildingCount > 0 ? `${buildingCount} structures detected` : "Minimal geometry found",
+      subtext: densitySubtext,
       details: {
         sources: ["OSM Building Footprints"],
         method: "Footprint count normalized against high-density urban references.",
         limitations: "Building mapping varies significantly by region."
       }
     },
+    transit: {
+      value: transitCount,
+      score: transitScore,
+      label: `${transitScore}/100`,
+      subtext: transitSubtext,
+      details: {
+        sources: ["OSM Public Transport Nodes"],
+        method: "Stop density normalized against high-frequency urban networks.",
+        limitations: "Frequency and route variety are not captured in static stop counts."
+      }
+    },
     metadata: {
       coverage,
       confidence,
       locationName: "Selected Area",
-      radius: radiusMeters
+      radius: radiusMeters,
+      lat: center[0],
+      lng: center[1]
     }
   };
 }
-

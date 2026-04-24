@@ -91,5 +91,6 @@ export const BENCHMARK_LOCATIONS: BenchmarkLocation[] = [
 export const BENCHMARK_RANGES = {
   amenities: { min: 0, max: 600 },
   greenAreaPct: { min: 0, max: 30 },
-  buildings: { min: 0, max: 2500 }
+  buildings: { min: 0, max: 2500 },
+  transit: { min: 0, max: 80 }
 };

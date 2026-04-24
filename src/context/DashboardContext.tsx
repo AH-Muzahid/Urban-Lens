@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { UrbanMetrics } from "@/services/metrics/processor";
+import { UrbanMetrics } from "@/types/metrics";
 
 interface DashboardContextType {
   metrics: UrbanMetrics | null;

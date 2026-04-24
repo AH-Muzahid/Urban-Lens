@@ -2,31 +2,45 @@
 
 import { MetricCard } from "./MetricCard";
 import { useDashboard } from "@/context/DashboardContext";
-import { Search, MapPin, Info, AlertCircle, Bookmark } from "lucide-react";
+import { Info, AlertCircle, GitCompare, Target, Bookmark } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GlassDivider } from "@/components/ui/GlassDivider";
+import { cn } from "@/lib/utils";
+import { PremiumCard } from "@/components/ui/PremiumCard";
 
 export function Sidebar() {
-  const { metrics, loading } = useDashboard();
+  const { metrics, loading, addToComparison, comparisonMetrics } = useDashboard();
 
   if (!metrics && !loading) {
     return (
-      <aside className="w-[380px] border-r border-zinc-800 bg-[#0B0F17] flex flex-col shrink-0 z-10 items-center justify-center p-12 text-center relative overflow-hidden">
+      <aside className="w-[420px] border-r border-white/[0.04] bg-[#06080C] flex flex-col shrink-0 z-10 items-center justify-center p-12 text-center relative overflow-hidden">
         {/* Subtle background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#E5B152]/5 rounded-full blur-[120px] pointer-events-none" />
         
+        {/* Scanning Effect Animation */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-20">
+          <motion.div 
+            animate={{ y: ["0%", "100%", "0%"] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#E5B152] to-transparent shadow-[0_0_15px_#E5B152]"
+          />
+        </div>
+
         <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           className="relative z-10"
         >
-          <div className="w-20 h-20 bg-white/[0.03] rounded-3xl flex items-center justify-center mb-6 border border-white/5 shadow-2xl relative overflow-hidden group mx-auto">
-            <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <Search className="w-10 h-10 text-zinc-600 group-hover:text-primary transition-colors" />
+          <div className="w-32 h-32 bg-white/[0.01] rounded-sm flex items-center justify-center mb-12 border border-white/[0.05] shadow-2xl relative overflow-hidden group mx-auto">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#E5B152]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <Target className="w-14 h-14 text-zinc-800 group-hover:text-[#E5B152] transition-all duration-700 group-hover:scale-110" />
+            
+            {/* Corner Brackets */}
+            <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-white/[0.05] group-hover:border-[#E5B152]/40 transition-colors" />
+            <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-white/[0.05] group-hover:border-[#E5B152]/40 transition-colors" />
           </div>
-          <h3 className="text-xl font-black text-white mb-3 tracking-tight uppercase">Ready to Analyze</h3>
-          <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">
-            Select a location on the map<br/>to generate research-grade insights.
+          <h3 className="text-[14px] font-black text-white mb-6 tracking-[0.5em] uppercase italic">Neural Network Offline</h3>
+          <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.3em] leading-relaxed max-w-[300px] mx-auto opacity-50 font-mono">
+            Initialize geographic node parameters to commence high-fidelity urban matrix analysis.
           </p>
         </motion.div>
       </aside>
@@ -34,117 +48,229 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-[420px] bg-[#0B0F17]/40 backdrop-blur-3xl flex flex-col overflow-hidden shrink-0 z-10 border-r border-white/[0.03]">
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-10">
-        
-        {/* Area Overview - Dominant Section */}
+    <aside className="w-[420px] bg-[#06080C] flex flex-col overflow-hidden shrink-0 z-10 border-r border-white/[0.04] relative">
+      {/* Texture Layer */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150" />
+      
+      {/* Background Grid */}
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-grid-white/[0.02] [background-size:24px_24px]" />
+      
+      {/* Global Scanning Line */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.03] z-50">
         <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="relative rounded-[2.5rem] bg-[#0D1117]/60 border border-white/[0.05] p-8 shadow-2xl overflow-hidden group backdrop-blur-3xl"
+          animate={{ y: ["-10%", "110%"] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          className="w-full h-[20%] bg-gradient-to-b from-transparent via-[#E5B152] to-transparent"
+        />
+      </div>
+
+      {/* Decorative Corner Brackets for Entire Sidebar */}
+      <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-white/[0.05] z-20 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-white/[0.05] z-20 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-white/[0.05] z-20 pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-white/[0.05] z-20 pointer-events-none" />
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-10 relative z-10">
+        
+        {/* Area Overview Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative px-4"
         >
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-8">
+          {/* Header Metadata Section (Matches First Image) */}
+          <PremiumCard className="p-8 relative overflow-hidden" withGrid={true}>
+            <div className="flex items-center justify-between mb-4">
               <div className="flex flex-col gap-1">
-                <span className="text-[9px] font-black text-primary uppercase tracking-[0.4em]">
-                  Area Overview
-                </span>
-                <h2 className="text-3xl font-black text-white tracking-[-0.04em] leading-tight">
+                <span className="text-[10px] font-black text-[#E5B152] uppercase tracking-[0.4em]">Area Overview</span>
+                <h2 className="text-2xl font-black text-white tracking-tight leading-tight">
                   {loading ? (
-                    <span className="inline-block w-48 h-8 bg-white/5 animate-pulse rounded-xl" />
+                    <span className="inline-block w-48 h-6 bg-white/5 animate-pulse rounded" />
                   ) : (
-                    metrics?.metadata.locationName || "New York City, USA"
+                    metrics?.metadata.locationName.split(',')[0] || "Target"
                   )}
                 </h2>
-                <div className="flex items-center gap-2 text-zinc-500 font-mono text-[10px] font-bold tracking-tight">
-                  <span>40.7128° N, 74.0060° W</span>
-                  <button className="p-1 rounded-lg bg-white/[0.03] border border-white/[0.05] hover:text-white transition-colors">
-                    <Bookmark className="w-3 h-3" />
-                  </button>
-                </div>
+                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest opacity-60">
+                  {metrics?.metadata.lat.toFixed(4)}° N, {metrics?.metadata.lng.toFixed(4)}° W
+                </p>
               </div>
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                <MapPin className="w-5 h-5 text-primary" />
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col items-end gap-1 mr-2">
+                  <div className="w-1 h-1 rounded-full bg-[#E5B152]/40" />
+                  <div className="w-1 h-1 rounded-full bg-white/5" />
+                </div>
+                <button 
+                  onClick={() => metrics && addToComparison(metrics)}
+                  disabled={!metrics || comparisonMetrics.every(m => m !== null)}
+                  className="text-zinc-600 hover:text-[#E5B152] transition-all p-2 bg-white/[0.03] border border-white/5 rounded-sm group relative overflow-hidden disabled:opacity-20"
+                  title="Add to Comparison"
+                >
+                  <div className="absolute inset-0 bg-[#E5B152]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <GitCompare className="w-4 h-4 group-hover:rotate-180 transition-transform relative z-10 duration-700" />
+                </button>
+                <button className="text-zinc-600 hover:text-[#E5B152] transition-all p-2 bg-white/[0.03] border border-white/5 rounded-sm group relative overflow-hidden">
+                  <div className="absolute inset-0 bg-[#E5B152]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <Bookmark className="w-4 h-4 group-hover:scale-110 transition-transform relative z-10" />
+                </button>
               </div>
             </div>
 
-            <GlassDivider className="mb-6 opacity-20" />
-
-            <div className="grid grid-cols-1 gap-6">
+            <div className="space-y-3 mt-6 border-t border-white/[0.04] pt-4">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Data Coverage</span>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-black text-primary">65%</span>
-                  <span className="text-[9px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20 uppercase tracking-tighter">Medium</span>
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Data Coverage</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black text-[#E5B152]">{metrics?.metadata.coverage ?? 0}%</span>
+                  <span className={cn(
+                    "text-[8px] font-black px-1.5 py-0.5 rounded-[2px] uppercase tracking-tighter",
+                    (metrics?.metadata.coverage ?? 0) > 80 ? "bg-emerald-500/10 text-emerald-500" :
+                    (metrics?.metadata.coverage ?? 0) > 40 ? "bg-amber-500/10 text-amber-500" :
+                    "bg-red-500/10 text-red-500"
+                  )}>
+                    {(metrics?.metadata.coverage ?? 0) > 80 ? "High" : (metrics?.metadata.coverage ?? 0) > 40 ? "Medium" : "Low"}
+                  </span>
                 </div>
               </div>
+
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Overall Confidence</span>
-                <span className="text-[9px] font-black text-red-400 bg-red-400/10 px-2 py-0.5 rounded border border-red-400/20 uppercase tracking-tighter">Low</span>
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Overall Confidence</span>
+                <span className={cn(
+                  "text-[8px] font-black px-1.5 py-0.5 rounded-[2px] uppercase tracking-tighter",
+                  metrics?.metadata.confidence === "High" ? "bg-emerald-500/10 text-emerald-500" :
+                  metrics?.metadata.confidence === "Medium" ? "bg-amber-500/10 text-amber-500" :
+                  "bg-red-500/10 text-red-500"
+                )}>
+                  {metrics?.metadata.confidence ?? "Unknown"}
+                </span>
               </div>
+
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Last Updated</span>
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">Today, 10:32 AM</span>
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Last Updated</span>
+                <span className="text-[10px] font-black text-white/40 font-mono tracking-tighter">Today, 10:32 AM</span>
               </div>
             </div>
-          </div>
+
+            {/* Corner Brackets for Header Card */}
+            <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-white/10" />
+            <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-white/10" />
+            <div className="absolute bottom-2 left-2 w-2 h-2 border-b border-l border-white/10" />
+            <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-white/10" />
+            
+            {/* Technical ID Tag */}
+            <div className="absolute top-0 right-12 translate-y-[-50%] bg-[#06080C] px-2 border-x border-white/5">
+              <span className="text-[6px] font-mono text-zinc-700 tracking-[0.3em]">SEC-ID: {metrics?.metadata.lat.toString().slice(-4)}</span>
+            </div>
+          </PremiumCard>
         </motion.div>
 
         {/* Metrics Section Header */}
-        <div className="flex items-center justify-between px-4">
-          <div className="flex items-center gap-4">
-            <h3 className="text-[10px] font-black text-white tracking-[0.5em] uppercase opacity-60">Indices</h3>
-            <div className="w-16 h-[1px] bg-gradient-to-r from-primary/40 to-transparent" />
+        <div className="flex items-center justify-between px-4 pt-6 border-t border-white/[0.04]">
+          <div className="flex items-center gap-6">
+            <div className="flex flex-col">
+              <h3 className="text-[12px] font-black text-white tracking-[0.5em] uppercase italic leading-none">Urban Matrix</h3>
+              <span className="text-[6px] font-bold text-zinc-700 uppercase tracking-[0.4em] mt-2">v4.0.2 Analytics</span>
+            </div>
+            <div className="flex-1 w-32 h-[1px] bg-gradient-to-r from-white/[0.06] to-transparent" />
           </div>
-          <button className="text-zinc-600 hover:text-white transition-colors p-2 hover:bg-white/[0.05] rounded-xl">
-            <Info className="w-4 h-4" />
+          <button className="text-zinc-800 hover:text-[#E5B152] transition-all p-2 hover:bg-white/[0.03] rounded-sm border border-white/[0.02] group">
+            <Info className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
           </button>
         </div>
 
         {/* Metrics List */}
-        <div className={`space-y-6 transition-all duration-700 ${loading ? 'opacity-40 blur-[4px] pointer-events-none translate-y-4' : 'opacity-100 translate-y-0'}`}>
+        <div className={`space-y-5 transition-all duration-1000 px-1 pb-32 ${loading ? 'opacity-30 blur-[10px] pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}>
           <AnimatePresence mode="popLayout">
             {metrics ? (
-              <div className="space-y-6 px-1">
+              <>
                 <MetricCard 
                   index={1}
-                  title="Walkability Index" 
-                  value={metrics.walkability.label} 
-                  subtext={metrics.walkability.subtext}
-                  availability={metrics.walkability.value > 10 ? "High" : "Medium"} 
+                  title="WALKABILITY" 
+                  value={metrics.walkability.score.toString()} 
+                  subtext={metrics.walkability.label}
+                  availability={metrics.walkability.score > 70 ? "High" : "Medium"} 
                   confidence={metrics.metadata.confidence}
                   details={metrics.walkability.details}
                 />
                 
                 <MetricCard 
                   index={2}
-                  title="Greenspace Access" 
-                  value={metrics.greenspace.label} 
-                  subtext={metrics.greenspace.subtext}
-                  availability={metrics.greenspace.value > 10 ? "High" : "Medium"} 
+                  title="GREENSPACE" 
+                  value={metrics.greenspace.value.toFixed(1)} 
+                  subtext={metrics.greenspace.label}
+                  availability={metrics.greenspace.value > 15 ? "High" : "Medium"} 
                   confidence={metrics.metadata.confidence}
                   details={metrics.greenspace.details}
                 />
-              </div>
+
+                <MetricCard 
+                  index={3}
+                  title="DENSITY" 
+                  value={metrics.density.value.toLocaleString()} 
+                  subtext={metrics.density.label}
+                  availability="High" 
+                  confidence="High"
+                  details={metrics.density.details}
+                />
+
+                <MetricCard 
+                  index={4}
+                  title="TRANSIT" 
+                  value={metrics.transit.score.toString()} 
+                  subtext={metrics.transit.subtext}
+                  availability={metrics.transit.score > 60 ? "High" : "Medium"} 
+                  confidence={metrics.metadata.confidence}
+                  details={metrics.transit.details}
+                />
+              </>
             ) : null}
           </AnimatePresence>
         </div>
 
-        {/* Bottom Alert */}
+        {/* Bottom Safety Notice with enhanced look */}
         {!loading && metrics && (
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-6 rounded-[2rem] bg-amber-500/5 border border-amber-500/10 flex gap-4 backdrop-blur-md"
+            className="p-8 rounded-sm bg-[#E5B152]/[0.01] border border-[#E5B152]/5 flex gap-8 backdrop-blur-3xl mx-1 relative overflow-hidden group"
           >
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 flex items-center justify-center shrink-0">
-              <AlertCircle className="w-5 h-5 text-amber-500" />
+            <div className="absolute top-0 left-0 w-[2px] h-full bg-[#E5B152]/20 group-hover:h-full transition-all duration-700" />
+            <div className="absolute top-0 left-0 w-4 h-[1px] bg-[#E5B152]/20" />
+            
+            <AlertCircle className="w-5 h-5 text-[#E5B152]/30 shrink-0 mt-1" />
+            <div className="flex flex-col gap-3">
+              <span className="text-[10px] font-black text-[#E5B152]/50 uppercase tracking-[0.4em]">Heuristic Disclaimer</span>
+              <p className="text-[10px] text-zinc-600 leading-relaxed font-bold uppercase tracking-[0.25em] opacity-80 font-mono">
+                Data derived via neural heuristics. Enterprise grade validation required for mission-critical deployments.
+              </p>
             </div>
-            <p className="text-[10px] text-amber-500/70 leading-relaxed font-bold uppercase tracking-[0.1em]">
-              Precision Notice: Estimates are based on OSM heuristics. Research-grade validation recommended.
-            </p>
+            
+            {/* Corner Bracket */}
+            <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-white/[0.05]" />
           </motion.div>
         )}
+      </div>
+      
+      {/* Sidebar Footer Info */}
+      <div className="absolute bottom-0 left-0 w-full h-12 bg-[#06080C] border-t border-white/[0.04] z-20 flex items-center justify-between px-6">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <span className="text-[7px] font-black text-zinc-700 uppercase tracking-[0.4em]">Auth: Secure</span>
+            <motion.div 
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1 h-1 rounded-full bg-emerald-500/40 shadow-[0_0_5px_rgba(16,185,129,0.4)]" 
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[7px] font-black text-zinc-700 uppercase tracking-[0.4em]">Stream: Active</span>
+            <div className="w-1 h-1 rounded-full bg-[#E5B152]/40" />
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col items-end">
+            <span className="text-[7px] font-mono text-zinc-800 uppercase tracking-widest leading-none">© UrbanLens Corp</span>
+            <span className="text-[6px] font-mono text-zinc-900 uppercase tracking-widest mt-1">v4.0.2-ALPHA</span>
+          </div>
+        </div>
       </div>
     </aside>
   );

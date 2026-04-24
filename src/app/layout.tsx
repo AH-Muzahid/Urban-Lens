@@ -17,7 +17,7 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-import { DashboardProvider } from "@/context/DashboardContext";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "UrbanLens | Research-Grade Urban Analysis",
@@ -34,9 +34,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <DashboardProvider>
+        <Providers>
           {children}
-        </DashboardProvider>
+        </Providers>
       </body>
     </html>
   );

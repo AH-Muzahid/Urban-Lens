@@ -95,6 +95,14 @@ export default function ComparePage() {
                             confidenceB: confidenceValue(metricsB.metadata.confidence),
                             description: "Calculated structural footprints per square kilometer."
                           },
+                          { 
+                            label: "Transit Access", 
+                            valueA: metricsA.transit.score, 
+                            valueB: metricsB.transit.score,
+                            confidenceA: confidenceValue(metricsA.metadata.confidence),
+                            confidenceB: confidenceValue(metricsB.metadata.confidence),
+                            description: "Density of public transportation nodes and accessibility hubs."
+                          },
                         ]} 
                       />
                     </div>
@@ -110,11 +118,13 @@ export default function ComparePage() {
                           { label: "W", value: metricsA.walkability.score, fullLabel: "Walkability" },
                           { label: "G", value: metricsA.greenspace.score, fullLabel: "Greenspace" },
                           { label: "D", value: metricsA.density.score, fullLabel: "Density" },
+                          { label: "T", value: metricsA.transit.score, fullLabel: "Transit" },
                         ]}
                         dataB={[
                           { label: "W", value: metricsB.walkability.score },
                           { label: "G", value: metricsB.greenspace.score },
                           { label: "D", value: metricsB.density.score },
+                          { label: "T", value: metricsB.transit.score },
                         ]}
                         confidenceA={confidenceValue(metricsA.metadata.confidence)}
                         confidenceB={confidenceValue(metricsB.metadata.confidence)}
@@ -223,6 +233,7 @@ export default function ComparePage() {
                                 { label: "W", value: m.walkability.score },
                                 { label: "G", value: m.greenspace.score },
                                 { label: "D", value: m.density.score },
+                                { label: "T", value: m.transit.score },
                               ]} 
                               confidenceA={confidenceValue(m.metadata.confidence)}
                             />
@@ -258,6 +269,15 @@ export default function ComparePage() {
                           availability={m.density.value > 50 ? "High" : "Low"} 
                           confidence={m.metadata.confidence}
                           details={m.density.details}
+                        />
+                        <MetricCard 
+                          index={4}
+                          title="Transit Access" 
+                          value={m.transit.label} 
+                          subtext={m.transit.subtext}
+                          availability={m.transit.score > 60 ? "High" : "Medium"} 
+                          confidence={m.metadata.confidence}
+                          details={m.transit.details}
                         />
                       </div>
 

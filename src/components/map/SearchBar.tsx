@@ -82,29 +82,39 @@ export function SearchBar() {
     >
       <div className={cn(
         "relative flex items-center bg-white/[0.03] border border-white/5 rounded-xl transition-all duration-300 px-4 h-10",
-        "focus-within:bg-white/[0.06] focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/10",
-        isOpen && results.length > 0 ? "rounded-b-none border-b-transparent" : ""
+        "focus-within:bg-white/[0.06] focus-within:border-[#E5B152]/50 focus-within:ring-4 focus-within:ring-[#E5B152]/10",
+        isOpen && results.length > 0 ? "rounded-b-none border-b-transparent shadow-[0_10px_40px_-15px_rgba(0,0,0,0.5)]" : ""
       )}>
         <Search className={cn(
           "w-4 h-4 transition-colors",
-          loading ? "text-primary animate-pulse" : "text-zinc-500 group-hover:text-zinc-400"
+          loading ? "text-[#E5B152] animate-pulse" : "text-zinc-500 group-hover:text-zinc-400"
         )} />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => query.length >= 3 && setIsOpen(true)}
-          placeholder="SEARCH GLOBAL ARCHIVES..."
+          placeholder="Search any location..."
           aria-label="Search for urban locations"
-          className="flex-1 bg-transparent border-none focus:ring-0 text-[11px] font-black tracking-widest text-white placeholder:text-zinc-600 px-3 uppercase"
+          className="flex-1 bg-transparent border-none focus:ring-0 text-xs font-bold text-white placeholder:text-zinc-700 px-3 uppercase tracking-wider"
         />
-          <button 
-            onClick={() => { setQuery(""); setResults([]); }}
-            aria-label="Clear search query"
-            className="p-1 hover:bg-white/5 rounded-lg transition-all"
-          >
-            <X className="w-3 h-3 text-zinc-500" />
-          </button>
+        
+        <div className="flex items-center gap-2">
+          {query ? (
+            <button 
+              onClick={() => { setQuery(""); setResults([]); }}
+              aria-label="Clear search query"
+              className="p-1 hover:bg-white/5 rounded-lg transition-all"
+            >
+              <X className="w-3 h-3 text-zinc-500" />
+            </button>
+          ) : (
+            <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.05]">
+              <span className="text-[8px] font-black text-zinc-600 tracking-tighter">⌘</span>
+              <span className="text-[8px] font-black text-zinc-600">K</span>
+            </div>
+          )}
+        </div>
       </div>
 
       <AnimatePresence>
