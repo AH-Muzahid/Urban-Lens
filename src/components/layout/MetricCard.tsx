@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Activity, Database, ChevronDown, Target, TreeDeciduous, TrainFront, Fingerprint, Info, Zap } from "lucide-react";
+import { Activity, Database, ChevronDown, Target, TreeDeciduous, TrainFront, Info, Footprints, Ear } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +26,7 @@ export function MetricCard({ index, title, value, subtext, availability, confide
   const isGreenspace = title.toUpperCase().includes("GREENSPACE");
   const isDensity = title.toUpperCase().includes("DENSITY");
   const isTransit = title.toUpperCase().includes("TRANSIT");
+  const isNoise = title.toUpperCase().includes("NOISE");
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -50,33 +51,36 @@ export function MetricCard({ index, title, value, subtext, availability, confide
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: (index || 0) * 0.1 }}
-      className="rounded-xl border border-white/[0.08] bg-[#0A0E17] p-5 overflow-hidden"
+      className="rounded-xl border border-white/[0.08] bg-[#0A0E17] p-4 overflow-hidden"
     >
-      <div className="flex items-center gap-2 mb-4">
-        {isWalkability && <Activity className="w-4 h-4 text-[#E5B152]" />}
+      <div className="flex items-center gap-2 mb-3">
+        {isWalkability && <Footprints className="w-4 h-4 text-[#E5B152]" />}
         {isGreenspace && <TreeDeciduous className="w-4 h-4 text-emerald-400" />}
         {isTransit && <TrainFront className="w-4 h-4 text-blue-400" />}
         {isDensity && <Target className="w-4 h-4 text-purple-400" />}
-        {!isWalkability && !isGreenspace && !isTransit && !isDensity && <Database className="w-4 h-4 text-[#E5B152]" />}
+        {isNoise && <Ear className="w-4 h-4 text-orange-400" />}
+        {!isWalkability && !isGreenspace && !isTransit && !isDensity && !isNoise && <Database className="w-4 h-4 text-[#E5B152]" />}
         <span className="text-xs font-bold text-[#E5B152] uppercase tracking-wider">{title}</span>
       </div>
 
-      <div className="flex items-baseline gap-2 mb-2">
-        <span className="text-4xl font-semibold text-white">{value}</span>
-        {title === "WALKABILITY" && <span className="text-lg text-gray-300">amenities</span>}
+      <div className="flex items-baseline gap-2 mb-1">
+        <span className="text-4xl font-semibold text-white">
+          {value}{isGreenspace && "%"}
+        </span>
+        {isWalkability && <span className="text-sm text-gray-300">amenities</span>}
       </div>
 
-      <p className="text-sm text-gray-400 mb-4">{subtext}</p>
+      {subtext && <p className="text-xs text-gray-400 mb-3">{subtext}</p>}
       
-      <div className="h-px bg-white/[0.08] w-full mb-4" />
+      <div className="h-px bg-white/[0.05] w-full mb-3" />
 
-      <div className="space-y-3 mb-4">
+      <div className="space-y-2 mb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className={cn("w-2 h-2 rounded-full", getStatusColor(availability))} />
-            <span className="text-sm text-gray-300">Data coverage</span>
+            <span className="text-xs text-gray-400">Data coverage</span>
           </div>
-          <span className={cn("text-xs font-medium px-2.5 py-0.5 rounded-full", getStatusPillColor(availability))}>
+          <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5", getStatusPillColor(availability))}>
             {availability}
           </span>
         </div>
@@ -84,9 +88,9 @@ export function MetricCard({ index, title, value, subtext, availability, confide
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className={cn("w-2 h-2 rounded-full", getStatusColor(confidence))} />
-            <span className="text-sm text-gray-300">Confidence</span>
+            <span className="text-xs text-gray-400">Confidence</span>
           </div>
-          <span className={cn("text-xs font-medium px-2.5 py-0.5 rounded-full", getStatusPillColor(confidence))}>
+          <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5", getStatusPillColor(confidence))}>
             {confidence}
           </span>
         </div>
@@ -94,10 +98,10 @@ export function MetricCard({ index, title, value, subtext, availability, confide
 
       <button 
         onClick={() => setExpanded(!expanded)} 
-        className="text-sm text-gray-400 hover:text-gray-300 flex items-center gap-1 transition-colors"
+        className="text-xs text-gray-400 hover:text-gray-300 flex items-center gap-1 transition-colors mt-1"
       >
         Show details
-        <ChevronDown className={cn("w-4 h-4 transition-transform", expanded && "rotate-180")} />
+        <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", expanded && "rotate-180")} />
       </button>
 
       {/* Expanded Details */}
@@ -109,27 +113,27 @@ export function MetricCard({ index, title, value, subtext, availability, confide
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="pt-4 space-y-4">
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Sources</p>
+            <div className="pt-3 space-y-3">
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Sources</p>
                 <div className="flex flex-wrap gap-2">
                   {details.sources.map((s, i) => (
-                    <span key={i} className="text-xs px-2 py-1 bg-white/[0.03] border border-white/[0.05] rounded text-gray-300">
+                    <span key={i} className="text-[11px] px-2 py-1 bg-white/[0.03] border border-white/[0.05] rounded text-gray-300">
                       {s}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Methodology</p>
-                <p className="text-sm text-gray-300 leading-relaxed">
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Methodology</p>
+                <p className="text-xs text-gray-400 leading-relaxed">
                   {details.method}
                 </p>
               </div>
 
-              <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded flex gap-3">
-                <Info className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+              <div className="p-2.5 bg-blue-500/10 border border-blue-500/20 rounded flex gap-2">
+                <Info className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
                 <p className="text-xs text-blue-200 leading-relaxed">
                   {details.limitations}
                 </p>

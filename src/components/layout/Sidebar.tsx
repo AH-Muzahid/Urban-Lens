@@ -70,61 +70,52 @@ export function Sidebar() {
       <div className="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-white/[0.05] z-20 pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-white/[0.05] z-20 pointer-events-none" />
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-10 relative z-10">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2 relative z-10">
         
         {/* Area Overview Section */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative px-4"
+          className="relative"
         >
-          {/* Header Metadata Section (Matches First Image) */}
-          <PremiumCard className="p-8 relative overflow-hidden" withGrid={true}>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-black text-[#E5B152] uppercase tracking-[0.4em]">Area Overview</span>
-                <h2 className="text-2xl font-black text-white tracking-tight leading-tight">
-                  {loading ? (
-                    <span className="inline-block w-48 h-6 bg-white/5 animate-pulse rounded" />
-                  ) : (
-                    metrics?.metadata.locationName.split(',')[0] || "Target"
-                  )}
-                </h2>
-                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest opacity-60">
-                  {metrics?.metadata.lat.toFixed(4)}° N, {metrics?.metadata.lng.toFixed(4)}° W
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col items-end gap-1 mr-2">
-                  <div className="w-1 h-1 rounded-full bg-[#E5B152]/40" />
-                  <div className="w-1 h-1 rounded-full bg-white/5" />
-                </div>
-                <button 
-                  onClick={() => metrics && addToComparison(metrics)}
-                  disabled={!metrics || comparisonMetrics.every(m => m !== null)}
-                  className="text-zinc-600 hover:text-[#E5B152] transition-all p-2 bg-white/[0.03] border border-white/5 rounded-sm group relative overflow-hidden disabled:opacity-20"
-                  title="Add to Comparison"
-                >
-                  <div className="absolute inset-0 bg-[#E5B152]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <GitCompare className="w-4 h-4 group-hover:rotate-180 transition-transform relative z-10 duration-700" />
-                </button>
-                <button className="text-zinc-600 hover:text-[#E5B152] transition-all p-2 bg-white/[0.03] border border-white/5 rounded-sm group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-[#E5B152]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <Bookmark className="w-4 h-4 group-hover:scale-110 transition-transform relative z-10" />
-                </button>
-              </div>
+          {/* Header Metadata Section */}
+          <div className="rounded-xl border border-white/[0.08] bg-[#0A0E17] p-3 overflow-hidden relative">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-[#E5B152] uppercase tracking-wider">Area Overview</span>
+              <button 
+                onClick={() => metrics && addToComparison(metrics)}
+                disabled={!metrics || comparisonMetrics.every(m => m !== null)}
+                className="text-gray-400 hover:text-gray-300 transition-colors disabled:opacity-50"
+              >
+                <Bookmark className="w-4 h-4" />
+              </button>
             </div>
 
-            <div className="space-y-3 mt-6 border-t border-white/[0.04] pt-4">
+            <div className="flex flex-col mb-3">
+              <h2 className="text-2xl font-semibold text-white tracking-tight mb-1">
+                {loading ? (
+                  <span className="inline-block w-48 h-6 bg-white/5 animate-pulse rounded" />
+                ) : (
+                  metrics?.metadata.locationName || "Target"
+                )}
+              </h2>
+              <p className="text-sm text-gray-400">
+                {metrics?.metadata.lat.toFixed(4)}° N, {metrics?.metadata.lng.toFixed(4)}° W
+              </p>
+            </div>
+
+            <div className="h-px bg-white/[0.05] w-full mb-3" />
+
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Data Coverage</span>
+                <span className="text-sm text-gray-400">Data Coverage</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black text-[#E5B152]">{metrics?.metadata.coverage ?? 0}%</span>
+                  <span className="text-sm font-bold text-[#E5B152]">{metrics?.metadata.coverage ?? 0}%</span>
                   <span className={cn(
-                    "text-[8px] font-black px-1.5 py-0.5 rounded-[2px] uppercase tracking-tighter",
-                    (metrics?.metadata.coverage ?? 0) > 80 ? "bg-emerald-500/10 text-emerald-500" :
-                    (metrics?.metadata.coverage ?? 0) > 40 ? "bg-amber-500/10 text-amber-500" :
-                    "bg-red-500/10 text-red-500"
+                    "text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5",
+                    (metrics?.metadata.coverage ?? 0) > 80 ? "bg-emerald-500/10 text-emerald-400" :
+                    (metrics?.metadata.coverage ?? 0) > 40 ? "bg-amber-500/10 text-amber-400" :
+                    "bg-rose-500/10 text-rose-400"
                   )}>
                     {(metrics?.metadata.coverage ?? 0) > 80 ? "High" : (metrics?.metadata.coverage ?? 0) > 40 ? "Medium" : "Low"}
                   </span>
@@ -132,52 +123,27 @@ export function Sidebar() {
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Overall Confidence</span>
+                <span className="text-sm text-gray-400">Overall Confidence</span>
                 <span className={cn(
-                  "text-[8px] font-black px-1.5 py-0.5 rounded-[2px] uppercase tracking-tighter",
-                  metrics?.metadata.confidence === "High" ? "bg-emerald-500/10 text-emerald-500" :
-                  metrics?.metadata.confidence === "Medium" ? "bg-amber-500/10 text-amber-500" :
-                  "bg-red-500/10 text-red-500"
+                  "text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/5",
+                  metrics?.metadata.confidence === "High" ? "bg-emerald-500/10 text-emerald-400" :
+                  metrics?.metadata.confidence === "Medium" ? "bg-amber-500/10 text-amber-400" :
+                  "bg-rose-500/10 text-rose-400"
                 )}>
                   {metrics?.metadata.confidence ?? "Unknown"}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Last Updated</span>
-                <span className="text-[10px] font-black text-white/40 font-mono tracking-tighter">Today, 10:32 AM</span>
+              <div className="flex items-center justify-between mt-3 pt-1">
+                <span className="text-sm text-gray-400">Last Updated</span>
+                <span className="text-sm text-gray-300">Today, 10:32 AM</span>
               </div>
             </div>
-
-            {/* Corner Brackets for Header Card */}
-            <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-white/10" />
-            <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-white/10" />
-            <div className="absolute bottom-2 left-2 w-2 h-2 border-b border-l border-white/10" />
-            <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-white/10" />
-            
-            {/* Technical ID Tag */}
-            <div className="absolute top-0 right-12 translate-y-[-50%] bg-[#06080C] px-2 border-x border-white/5">
-              <span className="text-[6px] font-mono text-zinc-700 tracking-[0.3em]">SEC-ID: {metrics?.metadata.lat.toString().slice(-4)}</span>
-            </div>
-          </PremiumCard>
+          </div>
         </motion.div>
 
-        {/* Metrics Section Header */}
-        <div className="flex items-center justify-between px-4 pt-6 border-t border-white/[0.04]">
-          <div className="flex items-center gap-6">
-            <div className="flex flex-col">
-              <h3 className="text-[12px] font-black text-white tracking-[0.5em] uppercase italic leading-none">Urban Matrix</h3>
-              <span className="text-[6px] font-bold text-zinc-700 uppercase tracking-[0.4em] mt-2">v4.0.2 Analytics</span>
-            </div>
-            <div className="flex-1 w-32 h-[1px] bg-gradient-to-r from-white/[0.06] to-transparent" />
-          </div>
-          <button className="text-zinc-800 hover:text-[#E5B152] transition-all p-2 hover:bg-white/[0.03] rounded-sm border border-white/[0.02] group">
-            <Info className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-          </button>
-        </div>
-
         {/* Metrics List */}
-        <div className={`space-y-5 transition-all duration-1000 px-1 pb-32 ${loading ? 'opacity-30 blur-[10px] pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}>
+        <div className={`space-y-2 transition-all duration-1000 pb-32 ${loading ? 'opacity-30 blur-[10px] pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}>
           <AnimatePresence mode="popLayout">
             {metrics ? (
               <>
