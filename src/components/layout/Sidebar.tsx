@@ -220,6 +220,16 @@ export function Sidebar() {
                   confidence={metrics.metadata.confidence}
                   details={metrics.transit.details}
                 />
+
+                <MetricCard 
+                  index={5}
+                  title="NOISE" 
+                  value={metrics.noise.score.toString()} 
+                  subtext={metrics.noise.subtext}
+                  availability={metrics.noise.score > 50 ? "High" : "Medium"} 
+                  confidence={metrics.metadata.confidence}
+                  details={metrics.noise.details}
+                />
               </>
             ) : null}
           </AnimatePresence>

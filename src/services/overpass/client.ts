@@ -37,6 +37,8 @@ export async function fetchFromOverpass(query: string): Promise<OverpassResponse
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json",
+        "User-Agent": "UrbanLens/1.0 (contact: dev@urbanlens.example.com)",
       },
       body: `data=${encodeURIComponent(query)}`,
       // Next.js caching: revalidate every 1 hour (3600 seconds) to reduce load on OSM

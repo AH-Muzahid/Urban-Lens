@@ -103,6 +103,14 @@ export default function ComparePage() {
                             confidenceB: confidenceValue(metricsB.metadata.confidence),
                             description: "Density of public transportation nodes and accessibility hubs."
                           },
+                          { 
+                            label: "Noise Level Proxy", 
+                            valueA: metricsA.noise.score, 
+                            valueB: metricsB.noise.score,
+                            confidenceA: confidenceValue(metricsA.metadata.confidence),
+                            confidenceB: confidenceValue(metricsB.metadata.confidence),
+                            description: "Proximity to major high-capacity roads and traffic corridors (inverted)."
+                          },
                         ]} 
                       />
                     </div>
@@ -112,23 +120,25 @@ export default function ComparePage() {
                         <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Spatial Fingerprint</h4>
                         <p className="text-[8px] text-zinc-600 font-bold uppercase tracking-widest italic">Overlaid comparison</p>
                       </div>
-                      <RadarChart 
-                        size={220}
-                        dataA={[
-                          { label: "W", value: metricsA.walkability.score, fullLabel: "Walkability" },
-                          { label: "G", value: metricsA.greenspace.score, fullLabel: "Greenspace" },
-                          { label: "D", value: metricsA.density.score, fullLabel: "Density" },
-                          { label: "T", value: metricsA.transit.score, fullLabel: "Transit" },
-                        ]}
-                        dataB={[
-                          { label: "W", value: metricsB.walkability.score },
-                          { label: "G", value: metricsB.greenspace.score },
-                          { label: "D", value: metricsB.density.score },
-                          { label: "T", value: metricsB.transit.score },
-                        ]}
-                        confidenceA={confidenceValue(metricsA.metadata.confidence)}
-                        confidenceB={confidenceValue(metricsB.metadata.confidence)}
-                      />
+                        <RadarChart 
+                          size={220}
+                          dataA={[
+                            { label: "W", value: metricsA.walkability.score, fullLabel: "Walkability" },
+                            { label: "G", value: metricsA.greenspace.score, fullLabel: "Greenspace" },
+                            { label: "D", value: metricsA.density.score, fullLabel: "Density" },
+                            { label: "T", value: metricsA.transit.score, fullLabel: "Transit" },
+                            { label: "N", value: metricsA.noise.score, fullLabel: "Noise" },
+                          ]}
+                          dataB={[
+                            { label: "W", value: metricsB.walkability.score },
+                            { label: "G", value: metricsB.greenspace.score },
+                            { label: "D", value: metricsB.density.score },
+                            { label: "T", value: metricsB.transit.score },
+                            { label: "N", value: metricsB.noise.score },
+                          ]}
+                          confidenceA={confidenceValue(metricsA.metadata.confidence)}
+                          confidenceB={confidenceValue(metricsB.metadata.confidence)}
+                        />
                     </div>
                   </div>
 
@@ -234,6 +244,7 @@ export default function ComparePage() {
                                 { label: "G", value: m.greenspace.score },
                                 { label: "D", value: m.density.score },
                                 { label: "T", value: m.transit.score },
+                                { label: "N", value: m.noise.score },
                               ]} 
                               confidenceA={confidenceValue(m.metadata.confidence)}
                             />
@@ -278,6 +289,15 @@ export default function ComparePage() {
                           availability={m.transit.score > 60 ? "High" : "Medium"} 
                           confidence={m.metadata.confidence}
                           details={m.transit.details}
+                        />
+                        <MetricCard 
+                          index={5}
+                          title="Noise Level Proxy" 
+                          value={m.noise.label} 
+                          subtext={m.noise.subtext}
+                          availability={m.noise.score > 50 ? "High" : "Medium"} 
+                          confidence={m.metadata.confidence}
+                          details={m.noise.details}
                         />
                       </div>
 

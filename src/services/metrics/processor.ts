@@ -8,6 +8,11 @@ function calculateScore(value: number, range: { min: number, max: number }): num
   return Math.min(Math.max(Math.round(score), 0), 100);
 }
 
+function calculateInvertedScore(value: number, range: { min: number, max: number }): number {
+  const score = ((range.max - value) / (range.max - range.min)) * 100;
+  return Math.min(Math.max(Math.round(score), 0), 100);
+}
+
 export function calculateMetrics(
   data: OverpassResponse, 
   center: [number, number], // [lat, lng]
@@ -79,7 +84,30 @@ export function calculateMetrics(
   
   const transitSubtext = `${railStations} Stations | ${busStops} Bus Stops`;
 
-  // 5. Metadata & Confidence
+  // 5. Noise Proxy Calculation
+  const majorRoads = elements.filter(el => 
+    el.type === "way" && el.tags?.highway && 
+    ["motorway", "trunk", "primary", "secondary", "tertiary"].includes(el.tags.highway)
+  );
+  
+  let noiseValue = 0;
+  majorRoads.forEach(road => {
+    switch (road.tags?.highway) {
+      case "motorway": noiseValue += 10; break;
+      case "trunk": noiseValue += 8; break;
+      case "primary": noiseValue += 5; break;
+      case "secondary": noiseValue += 3; break;
+      case "tertiary": noiseValue += 1; break;
+    }
+  });
+
+  const noiseScore = calculateInvertedScore(noiseValue, BENCHMARK_RANGES.noise);
+  let noiseConfidenceLabel = "Quiet";
+  if (noiseScore < 40) noiseConfidenceLabel = "High Noise";
+  else if (noiseScore < 70) noiseConfidenceLabel = "Moderate Noise";
+  const noiseSubtext = `Proximity Proxy: ${noiseValue} units | ${noiseConfidenceLabel}`;
+
+  // 6. Metadata & Confidence
   const hasBuildings = buildingCount > 0;
   const hasAmenities = walkabilityValue > 0;
   
@@ -132,6 +160,17 @@ export function calculateMetrics(
         sources: ["OSM Public Transport Nodes"],
         method: "Stop density normalized against high-frequency urban networks.",
         limitations: "Frequency and route variety are not captured in static stop counts."
+      }
+    },
+    noise: {
+      value: noiseValue,
+      score: noiseScore,
+      label: `${noiseScore}/100`,
+      subtext: noiseSubtext,
+      details: {
+        sources: ["OSM Major Road Network"],
+        method: "Weighted proxy based on proximity to high-capacity roads (motorways to tertiary). Inverted score (higher is quieter).",
+        limitations: "Does not account for traffic volume, speed limits, or physical noise barriers."
       }
     },
     metadata: {

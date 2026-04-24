@@ -43,6 +43,17 @@ export interface UrbanMetrics {
       limitations: string;
     };
   };
+  noise: {
+    value: number; // Raw value (weighted proxy)
+    score: number; // 0-100 score
+    label: string;
+    subtext: string;
+    details: {
+      sources: string[];
+      method: string;
+      limitations: string;
+    };
+  };
   metadata: {
     coverage: number;
     confidence: "High" | "Medium" | "Low";

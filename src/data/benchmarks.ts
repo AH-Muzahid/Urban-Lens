@@ -92,5 +92,6 @@ export const BENCHMARK_RANGES = {
   amenities: { min: 0, max: 600 },
   greenAreaPct: { min: 0, max: 30 },
   buildings: { min: 0, max: 2500 },
-  transit: { min: 0, max: 80 }
+  transit: { min: 0, max: 80 },
+  noise: { min: 0, max: 200 } // Weighted units: motorways=10, trunks=8, etc.
 };

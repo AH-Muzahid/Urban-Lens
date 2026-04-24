@@ -7,8 +7,40 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MapControls } from "@/components/layout/MapControls";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
-// Dark matter style from Carto for a premium look
-const MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+// Dark matter style from Carto for a premium look (using raster tiles to avoid vector tile fetch errors)
+const MAP_STYLE: any = {
+  version: 8,
+  sources: {
+    "carto-dark": {
+      type: "raster",
+      tiles: [
+        "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+      ],
+      tileSize: 256,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    },
+  },
+  layers: [
+    {
+      id: "background",
+      type: "background",
+      paint: {
+        "background-color": "#0a0a0a"
+      }
+    },
+    {
+      id: "carto-dark-layer",
+      type: "raster",
+      source: "carto-dark",
+      minzoom: 0,
+      maxzoom: 20,
+    },
+  ],
+};
 
 interface ViewState {
   longitude: number;
@@ -42,10 +74,17 @@ export function BaseMap() {
   React.useEffect(() => {
     const handler = setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString());
-      params.set("lat", viewState.latitude.toFixed(5));
-      params.set("lng", viewState.longitude.toFixed(5));
-      params.set("z", viewState.zoom.toFixed(2));
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      const newLat = viewState.latitude.toFixed(5);
+      const newLng = viewState.longitude.toFixed(5);
+      const newZ = viewState.zoom.toFixed(2);
+      
+      // Only push to router if the values actually changed to prevent infinite loop
+      if (params.get("lat") !== newLat || params.get("lng") !== newLng || params.get("z") !== newZ) {
+        params.set("lat", newLat);
+        params.set("lng", newLng);
+        params.set("z", newZ);
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      }
     }, 500);
 
     return () => clearTimeout(handler);

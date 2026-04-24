@@ -38,6 +38,12 @@ export async function GET(req: NextRequest) {
         relation["leisure"="park"](${bbox});
         way["landuse"~"grass|forest|meadow"](${bbox});
         way["building"](${bbox});
+        node["highway"="bus_stop"](${bbox});
+        node["railway"~"station|stop"](${bbox});
+        way["railway"~"station|stop"](${bbox});
+        node["public_transport"~"stop_position|platform"](${bbox});
+        node["amenity"="bus_station"](${bbox});
+        way["highway"~"motorway|trunk|primary|secondary|tertiary"](${bbox});
       );
       out body geom;
     `;
