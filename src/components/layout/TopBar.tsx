@@ -5,6 +5,13 @@ import { SearchBar } from "@/components/map/SearchBar";
 import { useSearchParams } from "next/navigation";
 import { useDashboard } from "@/context/DashboardContext";
 import { Compass } from "lucide-react";
+import BasicDropdown from "@/components/smoothui/basic-dropdown";
+
+const radiusItems = [
+  { id: "500", label: "500m Radius" },
+  { id: "1000", label: "1000m Radius" },
+  { id: "2000", label: "2000m Radius" },
+];
 
 export function TopBar() {
   const [radius, setRadius] = useState("500");
@@ -25,7 +32,7 @@ export function TopBar() {
   };
 
   return (
-    <nav className="flex items-center justify-between bg-[#06080C] px-6 py-4 border-b border-white/[0.04] z-40 relative">
+    <nav className="relative flex items-center justify-between bg-[#06080C]/80 backdrop-blur-xl px-6 py-4 border-b border-white/[0.04] z-50">
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-3">
           <div className="relative w-8 h-8 flex items-center justify-center">
@@ -48,25 +55,12 @@ export function TopBar() {
           </svg>
         </button>
 
-        <div className="relative min-w-[140px] shrink-0">
-          <select 
-            value={radius}
-            onChange={(e) => setRadius(e.target.value)}
-            disabled={loading}
-            className="appearance-none w-full bg-[#E5B152]/10 border border-[#E5B152]/30 text-[#E5B152] font-medium text-sm rounded-lg px-9 py-2 focus:ring-1 focus:ring-[#E5B152] outline-none"
-          >
-            <option value="500">500m Radius</option>
-            <option value="1000">1000m Radius</option>
-            <option value="2000">2000m Radius</option>
-          </select>
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Compass className="w-4 h-4 text-[#E5B152]" />
-          </div>
-          <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-            <svg className="w-4 h-4 text-[#E5B152]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </div>
+        <div className="relative min-w-[140px] shrink-0 text-[#E5B152]">
+          <BasicDropdown 
+            label={radius + "m Radius"}
+            items={radiusItems}
+            onChange={(item) => setRadius(item.id.toString())}
+          />
         </div>
 
         <button 

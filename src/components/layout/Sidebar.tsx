@@ -8,15 +8,25 @@ import { cn } from "@/lib/utils";
 import { PremiumCard } from "@/components/ui/PremiumCard";
 
 export function Sidebar() {
-  const { metrics, loading, addToComparison, comparisonMetrics, isSidebarOpen } = useDashboard();
+  const { metrics, loading, addToComparison, comparisonMetrics, isSidebarOpen, setIsSidebarOpen } = useDashboard();
 
   if (!metrics && !loading) {
     return (
       <aside className={cn(
-        "absolute left-16 top-0 bottom-0 bg-[#06080C]/90 backdrop-blur-xl shadow-[20px_0_50px_rgba(0,0,0,0.6)] flex flex-col shrink-0 z-40 overflow-hidden transition-all duration-300",
-        isSidebarOpen ? "w-[340px] border-r border-white/[0.08]" : "w-0 border-0"
+        "absolute left-20 top-4 bottom-4 bg-[#06080C]/90 backdrop-blur-xl shadow-[20px_0_50px_rgba(0,0,0,0.6)] flex flex-col shrink-0 z-40 overflow-hidden transition-all duration-300 rounded-2xl border border-white/[0.08]",
+        isSidebarOpen ? "w-[300px] opacity-100" : "w-0 opacity-0 border-0"
       )}>
-        <div className="w-[340px] min-w-[340px] h-full flex flex-col items-center justify-center p-12 text-center">
+        <div className="w-[300px] min-w-[300px] h-full flex flex-col items-center justify-center p-12 text-center relative">
+        {/* Close Button */}
+        <button 
+          onClick={() => setIsSidebarOpen(false)}
+          className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/[0.02] border border-white/[0.08] flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 transition-colors z-50"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
         {/* Subtle background glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#E5B152]/5 rounded-full blur-[120px] pointer-events-none" />
         
@@ -54,10 +64,20 @@ export function Sidebar() {
 
   return (
     <aside className={cn(
-      "absolute left-16 top-0 bottom-0 bg-[#06080C]/90 backdrop-blur-xl shadow-[20px_0_50px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden shrink-0 z-40 transition-all duration-300",
-      isSidebarOpen ? "w-[340px] border-r border-white/[0.08]" : "w-0 border-0"
+      "absolute left-20 top-4 bottom-4 bg-[#06080C]/90 backdrop-blur-xl shadow-[20px_0_50px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden shrink-0 z-40 transition-all duration-300 rounded-2xl border border-white/[0.08]",
+      isSidebarOpen ? "w-[300px] opacity-100" : "w-0 opacity-0 border-0"
     )}>
-      <div className="w-[340px] min-w-[340px] h-full flex flex-col relative">
+      <div className="w-[300px] min-w-[300px] h-full flex flex-col relative">
+      {/* Close Button */}
+      <button 
+        onClick={() => setIsSidebarOpen(false)}
+        className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/[0.02] border border-white/[0.08] flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 transition-colors z-50"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
       {/* Texture Layer */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150" />
       

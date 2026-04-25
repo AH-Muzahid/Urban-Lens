@@ -28,7 +28,7 @@ export function NavSidebar() {
   const { toggleSidebar, setIsSidebarOpen } = useDashboard();
 
   return (
-    <aside className="w-16 bg-[#06080C] flex flex-col items-center py-4 shrink-0 z-50 border-r border-white/[0.04] relative overflow-hidden h-screen">
+    <aside className="w-16 bg-[#06080C] flex flex-col items-center py-4 shrink-0 z-50 border-r border-white/[0.04] relative overflow-hidden h-full">
       {/* Texture Layer */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150" />
       
@@ -37,7 +37,7 @@ export function NavSidebar() {
       
 
 
-      <div className="flex flex-col gap-2 flex-1 relative z-10 w-full mt-4">
+      <div className="flex flex-col gap-1 flex-1 relative z-10 w-full mt-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           
@@ -54,7 +54,7 @@ export function NavSidebar() {
                 }
               }}
               className={cn(
-                "relative flex flex-col items-center justify-center gap-2 transition-all duration-500 group w-full py-4",
+                "relative flex flex-col items-center justify-center gap-1.5 transition-all duration-500 group w-full py-1.5",
                 isActive ? "text-[#E5B152]" : "text-[#4A5568] hover:text-zinc-300"
               )}
             >
