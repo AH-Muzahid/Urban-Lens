@@ -13,7 +13,7 @@ interface GlassPanelProps {
 export function GlassPanel({ children, className, animate = true, delay = 0 }: GlassPanelProps) {
   const content = (
     <div className={cn(
-      "bg-[#0B0F17]/60 backdrop-blur-xl border border-white/5 rounded-2xl shadow-2xl overflow-hidden",
+      "bg-white/70 dark:bg-[#0B0F17]/60 backdrop-blur-xl border border-black/5 dark:border-white/5 rounded-2xl shadow-2xl overflow-hidden",
       className
     )}>
       {children}

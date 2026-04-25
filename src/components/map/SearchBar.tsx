@@ -81,12 +81,12 @@ export function SearchBar() {
       aria-controls="search-results"
     >
       <div className={cn(
-        "relative flex items-center w-full bg-[#1f2937]/50 border border-gray-700 rounded-lg transition-all duration-300",
-        "focus-within:ring-1 focus-within:ring-yellow-500",
-        isOpen && results.length > 0 ? "rounded-b-none border-b-transparent shadow-[0_10px_40px_-15px_rgba(0,0,0,0.5)]" : ""
+        "relative flex items-center w-full bg-[#111827] dark:bg-[#111827] light:bg-zinc-100 border border-white/[0.08] dark:border-white/[0.08] border-zinc-200 rounded-lg transition-all duration-200",
+        "focus-within:ring-2 focus-within:ring-[#facc15]/50 focus-within:border-[#facc15]/30",
+        isOpen && results.length > 0 ? "rounded-b-none border-b-transparent" : ""
       )}>
         <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-          <span className="text-gray-500 font-mono text-lg">{">"}</span>
+          <Search className="w-4 h-4 text-zinc-500" />
         </div>
         <input
           type="text"
@@ -95,7 +95,7 @@ export function SearchBar() {
           onFocus={() => query.length >= 3 && setIsOpen(true)}
           placeholder="Search any location..."
           aria-label="Search for urban locations"
-          className="w-full bg-transparent border-none focus:ring-0 text-gray-300 text-sm pl-8 pr-10 py-2 outline-none rounded-lg"
+          className="w-full bg-transparent border-none focus:ring-0 text-zinc-200 dark:text-zinc-200 text-sm pl-10 pr-10 py-2.5 outline-none rounded-lg placeholder:text-zinc-500"
         />
         
         <div className="absolute inset-y-0 right-3 flex items-center">
@@ -109,7 +109,7 @@ export function SearchBar() {
             </button>
           ) : (
             <div className="hidden md:flex items-center gap-1 px-2 py-0.5 rounded-md border border-white/[0.05]">
-              <Target className="w-4 h-4 text-gray-500" />
+              <Search className="w-4 h-4 text-gray-500" />
             </div>
           )}
         </div>

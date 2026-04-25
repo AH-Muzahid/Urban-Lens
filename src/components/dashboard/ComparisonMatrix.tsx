@@ -10,6 +10,8 @@ export function ComparisonMatrix() {
   const { comparisonMetrics, removeFromComparison } = useDashboard();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  if (comparisonMetrics.every(m => m === null)) return null;
+
   return (
     <div className="absolute bottom-12 left-12 right-12 z-30 pointer-events-none">
       <div className="flex flex-col gap-4">

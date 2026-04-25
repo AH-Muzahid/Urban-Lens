@@ -4,11 +4,12 @@ import * as React from "react";
 import Map from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useTheme } from "next-themes";
 import { MapControls } from "@/components/layout/MapControls";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
-// Carto Dark Matter vector tiles (MapLibre compatible)
-const MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+const LIGHT_MAP_STYLE = "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
+const DARK_MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
 interface ViewState {
   longitude: number;
@@ -22,6 +23,12 @@ export function BaseMap() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Parse URL state or default to a starting location (e.g., London)
   const [viewState, setViewState] = React.useState<ViewState>(() => {
@@ -58,12 +65,18 @@ export function BaseMap() {
     return () => clearTimeout(handler);
   }, [viewState, pathname, router, searchParams]);
 
+  const mapStyle = !mounted 
+    ? LIGHT_MAP_STYLE 
+    : resolvedTheme === "dark" 
+    ? DARK_MAP_STYLE 
+    : LIGHT_MAP_STYLE;
+
   return (
     <div className="absolute inset-0 z-0">
       <Map
         {...viewState}
         onMove={(evt) => setViewState(evt.viewState)}
-        mapStyle={MAP_STYLE}
+        mapStyle={mapStyle}
         style={{ width: "100%", height: "100%" }}
         interactive={true}
       >

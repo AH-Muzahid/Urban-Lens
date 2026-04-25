@@ -6,6 +6,7 @@ import { NavSidebar } from "@/components/layout/NavSidebar";
 import { ComparisonMatrix } from "@/components/dashboard/ComparisonMatrix";
 import { MapOverlays } from "@/components/map/MapOverlays";
 import { DataSources } from "@/components/ui/DataSources";
+import { ThinFooter } from "@/components/layout/ThinFooter";
 
 export default function Home() {
   return (
@@ -39,7 +40,7 @@ export default function Home() {
         </div>
 
         {/* Sidebars (Floating on left, below TopBar) */}
-        <div className="pointer-events-auto absolute top-[76px] bottom-0 left-0 flex z-40">
+        <div className="pointer-events-auto absolute top-[76px] bottom-8 left-0 flex z-40">
           <NavSidebar />
           <Sidebar />
         </div>
@@ -56,6 +57,11 @@ export default function Home() {
           <div className="pointer-events-auto">
             <DataSources />
           </div>
+        </div>
+
+        {/* Footer (Floating at bottom) */}
+        <div className="pointer-events-auto absolute bottom-0 left-0 right-0 z-50">
+          <ThinFooter />
         </div>
       </div>
     </main>
