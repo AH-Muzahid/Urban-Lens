@@ -24,7 +24,11 @@ export default function ComparePage() {
   const bothSelected = metricsA && metricsB;
   const hasMetrics = comparisonMetrics.some(m => m !== null);
 
-  const confidenceValue = (c: string) => parseInt(c) || 100;
+  const confidenceValue = (confidence: "High" | "Medium" | "Low") => {
+    if (confidence === "High") return 90;
+    if (confidence === "Medium") return 60;
+    return 30;
+  };
 
   return (
     <main className="flex h-screen w-full bg-background text-foreground overflow-hidden">
@@ -93,7 +97,7 @@ export default function ComparePage() {
                             valueB: metricsB.density.score,
                             confidenceA: confidenceValue(metricsA.metadata.confidence),
                             confidenceB: confidenceValue(metricsB.metadata.confidence),
-                            description: "Calculated structural footprints per square kilometer."
+                            description: "Normalized from raw building footprint counts detected within the selected analysis radius."
                           },
                           { 
                             label: "Transit Access", 
@@ -304,8 +308,8 @@ export default function ComparePage() {
                       {/* Summary Data */}
                       <div className="grid grid-cols-2 gap-4">
                         <PremiumCard className="p-4 bg-white/[0.02]">
-                          <span className="block text-[9px] font-black text-zinc-500 uppercase tracking-[0.15em] mb-2">Urban Density</span>
-                          <MetricValue value={Math.round(m.density.value)} unit="bldg/km²" size="sm" />
+                            <span className="block text-[9px] font-black text-zinc-500 uppercase tracking-[0.15em] mb-2">Building Footprints</span>
+                            <MetricValue value={Math.round(m.density.value)} unit="structures" size="sm" />
                         </PremiumCard>
                         <PremiumCard className="p-4 bg-white/[0.02]">
                           <span className="block text-[9px] font-black text-zinc-500 uppercase tracking-[0.15em] mb-2">Green Coverage</span>
@@ -334,7 +338,7 @@ export default function ComparePage() {
             </motion.div>
           )}
 
-          <DataSources />
+          <DataSources layout="inline" className="mt-10" />
         </div>
       </div>
     </main>

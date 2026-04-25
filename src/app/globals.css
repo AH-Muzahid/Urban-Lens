@@ -49,56 +49,84 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 221 48% 9%;
-    --card: 0 0% 100%;
-    --card-foreground: 221 48% 9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 221 48% 9%;
-    --primary: 48 96% 53%; /* #facc15 */
-    --primary-foreground: 221 48% 9%;
-    --secondary: 221 48% 96%;
-    --secondary-foreground: 221 48% 9%;
-    --muted: 221 48% 96%;
-    --muted-foreground: 221 10% 46%;
-    --accent: 221 48% 96%;
-    --accent-foreground: 221 48% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 221 10% 90%;
-    --input: 221 10% 90%;
-    --ring: 48 96% 53%;
+    /* Light mode — clean whites */
+    --background: #f8fafc;
+    --foreground: #0b1220;
+    --card: #ffffff;
+    --card-foreground: #0b1220;
+    --popover: #ffffff;
+    --popover-foreground: #0b1220;
+    --primary: #facc15;
+    --primary-foreground: #0b1220;
+    --secondary: #f1f5f9;
+    --secondary-foreground: #0b1220;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+    --accent: #f1f5f9;
+    --accent-foreground: #0b1220;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+    --ring: #facc15;
     --radius: 0.75rem;
+
+    /* Sidebar & map-panel tokens */
+    --sidebar-bg: #ffffff;
+    --topbar-bg: rgba(248, 250, 252, 0.95);
+    --panel-bg: #ffffff;
   }
 
   .dark {
-    --background: 221 48% 9%; /* #0b1220 */
-    --foreground: 210 20% 98%;
-    --card: 222 47% 11%; /* #0f172a */
-    --card-foreground: 210 20% 98%;
-    --popover: 221 48% 9%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 48 96% 53%; /* #facc15 */
-    --primary-foreground: 221 48% 9%;
-    --secondary: 217 32% 17%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 32% 17%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --ring: 48 96% 53%;
+    /* Dark mode — deep navy palette */
+    --background: #0b1220;
+    --foreground: #f8fafc;
+    --card: #0f172a;
+    --card-foreground: #f8fafc;
+    --popover: #0b1220;
+    --popover-foreground: #f8fafc;
+    --primary: #facc15;
+    --primary-foreground: #0b1220;
+    --secondary: #1e293b;
+    --secondary-foreground: #f8fafc;
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    --accent: #1e293b;
+    --accent-foreground: #f8fafc;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #f8fafc;
+    --border: rgba(255,255,255,0.08);
+    --input: #1e293b;
+    --ring: #facc15;
+
+    /* Sidebar & map-panel tokens */
+    --sidebar-bg: #0a0f1a;
+    --topbar-bg: rgba(10, 15, 26, 0.95);
+    --panel-bg: #0f172a;
   }
 
   * {
-    @apply border-border;
+    box-sizing: border-box;
+    border-color: var(--border);
   }
-  
+
+  /* Smooth theme transition on all elements */
+  *,
+  *::before,
+  *::after {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+  }
+
+  /* Exception: don't animate transforms/opacity (breaks animations) */
+  *[class*="animate-"],
+  *[class*="transition-"],
+  *[style*="transform"] {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease !important;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }

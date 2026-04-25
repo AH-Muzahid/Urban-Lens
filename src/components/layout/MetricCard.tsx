@@ -1,143 +1,114 @@
 "use client";
 
 import { useState } from "react";
-import { Activity, Database, ChevronDown, Target, TreeDeciduous, TrainFront, Info, Footprints, Ear } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface MetricCardProps {
-  index?: number;
-  title: string;
-  value: string;
-  subtext?: string;
-  availability: "High" | "Medium" | "Low" | "Unknown";
-  confidence: "High" | "Medium" | "Low";
-  details: {
-    sources: string[];
-    method: string;
-    limitations: string;
-  };
+type Availability = "High" | "Medium" | "Low" | "Unknown";
+type Confidence = "High" | "Medium" | "Low";
+
+interface MetricDetails {
+	sources: string[];
+	method: string;
+	limitations: string;
 }
 
-export function MetricCard({ index, title, value, subtext, availability, confidence, details }: MetricCardProps) {
-  const [expanded, setExpanded] = useState(false);
+interface MetricCardProps {
+	index: number;
+	title: string;
+	value: string;
+	subtext: string;
+	availability: Availability;
+	confidence: Confidence;
+	details: MetricDetails;
+	className?: string;
+}
 
-  const isWalkability = title.toUpperCase().includes("WALKABILITY");
-  const isGreenspace = title.toUpperCase().includes("GREENSPACE");
-  const isDensity = title.toUpperCase().includes("DENSITY");
-  const isTransit = title.toUpperCase().includes("TRANSIT");
-  const isNoise = title.toUpperCase().includes("NOISE");
+const statusColors: Record<Availability, string> = {
+	High: "text-emerald-400 border-emerald-400/25 bg-emerald-500/10",
+	Medium: "text-amber-400 border-amber-400/25 bg-amber-500/10",
+	Low: "text-red-400 border-red-400/25 bg-red-500/10",
+	Unknown: "text-zinc-400 border-zinc-400/25 bg-zinc-500/10",
+};
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "High": return "bg-emerald-400";
-      case "Medium": return "bg-[#facc15]";
-      case "Low": return "bg-red-400";
-      default: return "bg-zinc-500";
-    }
-  };
+const confidenceColors: Record<Confidence, string> = {
+	High: "text-emerald-400",
+	Medium: "text-amber-400",
+	Low: "text-red-400",
+};
 
-  const getStatusPillColor = (status: string) => {
-    switch (status) {
-      case "High": return "bg-emerald-500/10 text-emerald-400";
-      case "Medium": return "bg-[#facc15]/10 text-[#facc15]";
-      case "Low": return "bg-red-500/10 text-red-400";
-      default: return "bg-zinc-500/10 text-zinc-400";
-    }
-  };
+export function MetricCard({
+	index,
+	title,
+	value,
+	subtext,
+	availability,
+	confidence,
+	details,
+	className,
+}: MetricCardProps) {
+	const [open, setOpen] = useState(false);
 
-  return (
-    <motion.div 
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: (index || 0) * 0.1 }}
-      className="rounded-xl border border-black/5 dark:border-white/[0.08] bg-zinc-50 dark:bg-[#0A0E17] p-4 overflow-hidden"
-    >
-      <div className="flex items-center gap-2 mb-3">
-        {isWalkability && <Footprints className="w-4 h-4 text-[#facc15]" />}
-        {isGreenspace && <TreeDeciduous className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />}
-        {isTransit && <TrainFront className="w-4 h-4 text-blue-500 dark:text-blue-400" />}
-        {isDensity && <Target className="w-4 h-4 text-purple-500 dark:text-purple-400" />}
-        {isNoise && <Ear className="w-4 h-4 text-orange-500 dark:text-orange-400" />}
-        {!isWalkability && !isGreenspace && !isTransit && !isDensity && !isNoise && <Database className="w-4 h-4 text-[#facc15]" />}
-        <span className="text-xs font-bold text-[#facc15] uppercase tracking-wider">{title}</span>
-      </div>
+	return (
+		<article
+			className={cn(
+				"rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-md p-4 sm:p-5",
+				className
+			)}
+		>
+			<div className="flex items-start justify-between gap-3">
+				<div className="min-w-0">
+					<div className="flex items-center gap-2 mb-1.5">
+						<span className="text-[9px] uppercase tracking-[0.25em] text-zinc-600 font-black">M{index}</span>
+						<h4 className="text-xs sm:text-sm font-black tracking-wider uppercase text-zinc-100 truncate">{title}</h4>
+					</div>
 
-      <div className="flex items-baseline gap-2 mb-1">
-        <span className="text-4xl font-semibold text-black dark:text-white">
-          {value}{isGreenspace && "%"}
-        </span>
-        {isWalkability && <span className="text-sm text-gray-500 dark:text-gray-300">amenities</span>}
-      </div>
+					<div className="flex items-end gap-2">
+						<span className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none">{value}</span>
+						<span className={cn("text-[10px] font-black uppercase tracking-[0.18em]", confidenceColors[confidence])}>
+							{confidence} confidence
+						</span>
+					</div>
 
-      {subtext && <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">{subtext}</p>}
-      
-      <div className="h-px bg-black/[0.05] dark:bg-white/[0.05] w-full mb-3" />
+					<p className="mt-2 text-[11px] text-zinc-500 font-medium leading-relaxed">{subtext}</p>
+				</div>
 
-      <div className="space-y-2 mb-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500 dark:text-gray-400">Data coverage</span>
-          <div className={cn("flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border border-black/5 dark:border-white/5", getStatusPillColor(availability))}>
-            <div className={cn("w-1.5 h-1.5 rounded-full", getStatusColor(availability))} />
-            {availability}
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500 dark:text-gray-400">Confidence</span>
-          <div className={cn("flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border border-black/5 dark:border-white/5", getStatusPillColor(confidence))}>
-            <div className={cn("w-1.5 h-1.5 rounded-full", getStatusColor(confidence))} />
-            {confidence}
-          </div>
-        </div>
-      </div>
+				<div className="flex flex-col items-end gap-2 shrink-0">
+					<span className={cn("text-[9px] font-black uppercase tracking-[0.2em] border rounded-full px-2 py-1", statusColors[availability])}>
+						{availability}
+					</span>
 
-      <button 
-        onClick={() => setExpanded(!expanded)} 
-        className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 flex items-center gap-1 transition-colors mt-1"
-      >
-        Show details
-        <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", expanded && "rotate-180")} />
-      </button>
+					<button
+						type="button"
+						onClick={() => setOpen((prev) => !prev)}
+						className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.15em] text-zinc-400 hover:text-zinc-200"
+						aria-expanded={open}
+					>
+						<Info className="w-3 h-3" />
+						Details
+						<ChevronDown className={cn("w-3 h-3 transition-transform", open && "rotate-180")} />
+					</button>
+				</div>
+			</div>
 
-      {/* Expanded Details */}
-      <AnimatePresence>
-        {expanded && (
-          <motion.div 
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="pt-3 space-y-3">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Sources</p>
-                <div className="flex flex-wrap gap-2">
-                  {details.sources.map((s, i) => (
-                    <span key={i} className="text-[11px] px-2 py-1 bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.05] dark:border-white/[0.05] rounded text-gray-600 dark:text-gray-300">
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              </div>
+			{open && (
+				<div className="mt-3 pt-3 border-t border-white/[0.06] space-y-2.5 text-[11px]">
+					<div>
+						<p className="text-zinc-400 uppercase tracking-[0.16em] font-black mb-1">Method</p>
+						<p className="text-zinc-300">{details.method}</p>
+					</div>
 
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Methodology</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                  {details.method}
-                </p>
-              </div>
+					<div>
+						<p className="text-zinc-400 uppercase tracking-[0.16em] font-black mb-1">Sources</p>
+						<p className="text-zinc-300">{details.sources.join(" | ")}</p>
+					</div>
 
-              <div className="p-2.5 bg-blue-500/10 border border-blue-500/20 rounded flex gap-2">
-                <Info className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" />
-                <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
-                  {details.limitations}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
+					<div>
+						<p className="text-zinc-400 uppercase tracking-[0.16em] font-black mb-1">Limitations</p>
+						<p className="text-zinc-400">{details.limitations}</p>
+					</div>
+				</div>
+			)}
+		</article>
+	);
 }

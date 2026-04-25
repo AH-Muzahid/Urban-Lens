@@ -1,7 +1,7 @@
 "use client";
 
 import { UrbanMetrics } from "@/types/metrics";
-import { X, GitCompare, ArrowUpRight } from "lucide-react";
+import { X, GitCompare } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -24,8 +24,17 @@ export function ComparisonCard({ metrics, onRemove, index }: ComparisonCardProps
     );
   }
 
-  const avgScore = (metrics.walkability.score + (metrics.greenspace.value * 5) + (metrics.transit.score)) / 3;
-  const grade = avgScore > 80 ? "A+" : avgScore > 60 ? "B" : "C";
+  const normalizedScores = [
+    metrics.walkability.score,
+    metrics.greenspace.score,
+    metrics.density.score,
+    metrics.transit.score,
+    metrics.noise.score,
+  ];
+  const avgScore = normalizedScores.reduce((sum, score) => sum + score, 0) / normalizedScores.length;
+
+  const grade = avgScore >= 85 ? "A" : avgScore >= 70 ? "B" : avgScore >= 55 ? "C" : "D";
+  const activeBars = Math.max(1, Math.min(5, Math.round(avgScore / 20)));
 
   return (
     <motion.div 
@@ -68,9 +77,8 @@ export function ComparisonCard({ metrics, onRemove, index }: ComparisonCardProps
             </div>
             <div className="flex items-center gap-3">
               <span className="text-[9px] font-black text-zinc-700 uppercase tracking-[0.6em]">Urban Index</span>
-              <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-400/5 px-2 py-0.5 rounded-full border border-emerald-400/10">
-                <ArrowUpRight className="w-3 h-3" />
-                <span className="text-[9px] font-black">+2.4%</span>
+              <div className="flex items-center gap-1.5 text-zinc-400 bg-white/[0.02] px-2 py-0.5 rounded-full border border-white/[0.06]">
+                <span className="text-[9px] font-black">5-METRIC MEAN</span>
               </div>
             </div>
           </div>
@@ -86,7 +94,7 @@ export function ComparisonCard({ metrics, onRemove, index }: ComparisonCardProps
                   key={i} 
                   className={cn(
                     "w-2 h-8 rounded-full transition-all duration-700",
-                    i <= 3 ? 'bg-[#E5B152] shadow-[0_0_15px_rgba(229,177,82,0.3)]' : 'bg-white/[0.04]'
+                    i <= activeBars ? 'bg-[#E5B152] shadow-[0_0_15px_rgba(229,177,82,0.3)]' : 'bg-white/[0.04]'
                   )}
                 />
               ))}

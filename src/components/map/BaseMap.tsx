@@ -7,6 +7,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { MapControls } from "@/components/layout/MapControls";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { useDashboard } from "@/context/DashboardContext";
+import { cn } from "@/lib/utils";
 
 const LIGHT_MAP_STYLE = "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
 const DARK_MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
@@ -24,6 +26,7 @@ export function BaseMap() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { resolvedTheme } = useTheme();
+  const { isSidebarOpen } = useDashboard();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -84,7 +87,12 @@ export function BaseMap() {
       </Map>
 
       {/* Map Info Overlay */}
-      <div className="absolute bottom-8 left-8 z-20 pointer-events-none">
+      <div
+        className={cn(
+          "absolute bottom-12 z-20 pointer-events-none transition-all duration-300",
+          isSidebarOpen ? "left-[548px]" : "left-28"
+        )}
+      >
         <GlassPanel className="px-4 py-2 flex items-center gap-6">
           <div className="flex flex-col">
             <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-0.5">Latitude</span>

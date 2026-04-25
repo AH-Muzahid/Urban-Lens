@@ -7,13 +7,18 @@ import { GitCompare, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function ComparisonMatrix() {
-  const { comparisonMetrics, removeFromComparison } = useDashboard();
+  const { comparisonMetrics, removeFromComparison, isSidebarOpen } = useDashboard();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   if (comparisonMetrics.every(m => m === null)) return null;
 
   return (
-    <div className="absolute bottom-12 left-12 right-12 z-30 pointer-events-none">
+    <div
+      className={cn(
+        "absolute bottom-12 right-12 z-30 pointer-events-none transition-all duration-300",
+        isSidebarOpen ? "left-[548px]" : "left-28"
+      )}
+    >
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <button 

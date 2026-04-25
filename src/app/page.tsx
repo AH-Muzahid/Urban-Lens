@@ -55,7 +55,7 @@ export default function Home() {
             <MapOverlays />
           </div>
           <div className="pointer-events-auto">
-            <DataSources />
+            <DataSources layout="overlay" />
           </div>
         </div>
 

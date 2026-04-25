@@ -65,7 +65,8 @@ export function calculateMetrics(
   const buildings = elements.filter(el => el.tags?.building);
   const buildingCount = buildings.length;
   const densityScore = calculateScore(buildingCount, BENCHMARK_RANGES.buildings);
-  const densitySubtext = `${buildingCount} structures detected | High Density`;
+  const densityBand = densityScore >= 70 ? "High" : densityScore >= 40 ? "Medium" : "Low";
+  const densitySubtext = `${buildingCount} structures detected | Relative density: ${densityBand}`;
 
   // 4. Transit Calculation
   const transitStops = elements.filter(el => 
