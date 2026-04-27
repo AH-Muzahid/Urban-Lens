@@ -28,14 +28,9 @@ export function NavSidebar() {
   const { toggleSidebar, setIsSidebarOpen } = useDashboard();
 
   return (
-    <aside className="w-20 bg-white dark:bg-[#0a0f1a] flex flex-col items-center py-4 shrink-0 z-50 border-r border-black/5 dark:border-white/[0.04] relative overflow-hidden h-full">
-      {/* Texture Layer */}
-      <div className="absolute inset-0 opacity-[0.01] dark:opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150" />
+    <aside className="w-20 bg-white dark:bg-[#0a0f1a] flex flex-col items-center shrink-0 z-50 border-r border-black/5 dark:border-white/[0.04] relative overflow-hidden h-full">
       
-      {/* Background Grid */}
-      <div className="absolute inset-0 opacity-[0.01] dark:opacity-[0.02] pointer-events-none bg-grid-black/[0.05] dark:bg-grid-white/[0.02] [background-size:16px_16px]" />
-      
-      <div className="flex flex-col gap-4 flex-1 relative z-10 w-full mt-4">
+      <div className="flex flex-col gap-3 flex-1 relative z-10 w-full mt-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           
@@ -82,13 +77,14 @@ export function NavSidebar() {
                   isActive ? "text-[#facc15]" : "text-zinc-500 group-hover:text-zinc-900 dark:text-[#64748b] dark:group-hover:text-zinc-300"
                 )} />
               </div>
-              
-              {/* Tooltip */}
-              <div className="absolute left-14 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none z-50">
-                <div className="bg-[#0a0f1a] dark:bg-white text-white dark:text-[#0a0f1a] text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-md shadow-xl border border-white/10 dark:border-black/10 whitespace-nowrap">
-                  {item.label}
-                </div>
-              </div>
+              <span
+                className={cn(
+                  "relative z-10 text-[8px] font-black tracking-[0.12em] leading-none",
+                  isActive ? "text-[#facc15]" : "text-zinc-500 group-hover:text-zinc-900 dark:text-[#64748b] dark:group-hover:text-zinc-300"
+                )}
+              >
+                {item.label}
+              </span>
             </Link>
           );
         })}
@@ -124,12 +120,14 @@ export function NavSidebar() {
             />
           )}
           <Settings className={cn("w-[22px] h-[22px] relative z-10", pathname === "/settings" ? "text-[#facc15]" : "text-zinc-500 group-hover:text-zinc-900 dark:text-[#64748b] dark:group-hover:text-zinc-300")} />
-          {/* Tooltip */}
-          <div className="absolute left-14 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none z-50">
-            <div className="bg-[#0a0f1a] dark:bg-white text-white dark:text-[#0a0f1a] text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-md shadow-xl border border-white/10 dark:border-black/10 whitespace-nowrap">
-              SETTINGS
-            </div>
-          </div>
+          <span
+            className={cn(
+              "relative z-10 text-[8px] font-black tracking-[0.12em] leading-none",
+              pathname === "/settings" ? "text-[#facc15]" : "text-zinc-500 group-hover:text-zinc-900 dark:text-[#64748b] dark:group-hover:text-zinc-300"
+            )}
+          >
+            SETTINGS
+          </span>
         </Link>
       </div>
     </aside>

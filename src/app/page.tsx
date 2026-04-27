@@ -34,13 +34,13 @@ export default function Home() {
       {/* UI Overlay */}
       <div className="relative z-10 h-full w-full pointer-events-none">
         
-        {/* TopBar (Floating at top) */}
-        <div className="pointer-events-auto absolute top-0 left-0 right-0 z-50">
+        {/* TopBar (Fixed at top) */}
+        <div className="pointer-events-auto fixed top-0 left-0 right-0 z-50">
           <TopBar />
         </div>
 
-        {/* Sidebars (Floating on left, below TopBar) */}
-        <div className="pointer-events-auto absolute top-[76px] bottom-8 left-0 flex z-40">
+        {/* Sidebars (Fixed on left, below TopBar) */}
+        <div className="pointer-events-auto fixed top-[68px] bottom-8 left-0 flex z-40">
           <NavSidebar />
           <Sidebar />
         </div>
@@ -59,8 +59,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Footer (Floating at bottom) */}
-        <div className="pointer-events-auto absolute bottom-0 left-0 right-0 z-50">
+        {/* Footer (Fixed at bottom) */}
+        <div className="pointer-events-auto fixed bottom-0 left-0 right-0 z-50">
           <ThinFooter />
         </div>
       </div>

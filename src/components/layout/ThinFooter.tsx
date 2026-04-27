@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export function ThinFooter() {
   return (
-    <footer className="absolute bottom-0 left-0 right-0 h-8 bg-white/90 dark:bg-[#06080C]/90 backdrop-blur-md border-t border-black/5 dark:border-white/[0.04] z-50 flex items-center justify-between px-6 text-[10px] text-zinc-500 uppercase tracking-wider font-medium">
+    <footer className="fixed bottom-0 left-0 right-0 h-8 bg-white/90 dark:bg-[#06080C]/90 backdrop-blur-md border-t border-black/5 dark:border-white/[0.04] z-50 flex items-center justify-between px-6 text-[10px] text-zinc-500 uppercase tracking-wider font-medium">
       <div className="flex items-center gap-4">
         <span>© 2026 UrbanLens</span>
         <span>v0.4.2</span>

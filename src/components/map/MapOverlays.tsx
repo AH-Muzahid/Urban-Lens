@@ -3,14 +3,14 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useDashboard } from "@/context/DashboardContext";
 
 const LAYERS = [
-  { id: "amenities",  label: "Amenities",           defaultOn: true,  color: "bg-[#facc15]"  },
-  { id: "greenspace", label: "Parks & Greenspace",  defaultOn: true,  color: "bg-emerald-400" },
-  { id: "buildings",  label: "Buildings",           defaultOn: true,  color: "bg-blue-400"    },
-  { id: "transit",    label: "Transit Stops",       defaultOn: false, color: "bg-zinc-500"    },
-  { id: "noise",      label: "Noise (Road Prox.)",  defaultOn: false, color: "bg-orange-400"  },
+  { id: "amenities",  label: "Amenities",           color: "bg-[#facc15]"  },
+  { id: "greenspace", label: "Parks & Greenspace",  color: "bg-emerald-400" },
+  { id: "buildings",  label: "Buildings",           color: "bg-blue-400"    },
+  { id: "transit",    label: "Transit Stops",       color: "bg-zinc-500"    },
+  { id: "noise",      label: "Noise (Road Prox.)",  color: "bg-orange-400"  },
 ];
 
 const CONFIDENCE = [
@@ -21,12 +21,18 @@ const CONFIDENCE = [
 ];
 
 export function MapOverlays() {
-  const [layers, setLayers] = useState(
-    Object.fromEntries(LAYERS.map((l) => [l.id, l.defaultOn]))
-  );
+  const {
+    basemapPreset,
+    isMapOverlaysVisible,
+    mapLayerVisibility,
+    setBasemapPreset,
+    setIsMapOverlaysVisible,
+    toggleMapLayer,
+  } = useDashboard();
 
-  const toggle = (id: string) =>
-    setLayers((prev) => ({ ...prev, [id]: !prev[id] }));
+  if (!isMapOverlaysVisible) {
+    return null;
+  }
 
   return (
     <>
@@ -37,34 +43,43 @@ export function MapOverlays() {
         transition={{ duration: 0.3, ease: "easeOut" }}
         className="absolute top-4 right-4 z-20 w-56 bg-[#0f172a] border border-white/[0.08] rounded-2xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
       >
-        <h3 className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.25em] mb-4">
-          Map Layers
-        </h3>
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <h3 className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.25em]">
+            Map Layers
+          </h3>
+          <button
+            type="button"
+            onClick={() => setIsMapOverlaysVisible(false)}
+            className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 hover:text-zinc-300"
+          >
+            Hide
+          </button>
+        </div>
 
         <div className="space-y-3">
           {LAYERS.map((layer) => (
             <button
               key={layer.id}
-              onClick={() => toggle(layer.id)}
+              onClick={() => toggleMapLayer(layer.id)}
               className="flex items-center justify-between w-full group"
             >
               <div className="flex items-center gap-2.5">
                 <div
                   className={cn(
                     "w-4 h-4 rounded-md border flex items-center justify-center transition-all duration-200",
-                    layers[layer.id]
+                    mapLayerVisibility[layer.id]
                       ? "bg-[#facc15] border-[#facc15]"
                       : "border-white/[0.15] bg-white/[0.03] group-hover:border-white/30"
                   )}
                 >
-                  {layers[layer.id] && (
+                  {mapLayerVisibility[layer.id] && (
                     <Check className="w-2.5 h-2.5 text-black" strokeWidth={3} />
                   )}
                 </div>
                 <span
                   className={cn(
                     "text-[11px] font-medium transition-colors",
-                    layers[layer.id]
+                    mapLayerVisibility[layer.id]
                       ? "text-white"
                       : "text-zinc-500 group-hover:text-zinc-300"
                   )}
@@ -75,7 +90,7 @@ export function MapOverlays() {
               <div
                 className={cn(
                   "w-2 h-2 rounded-full",
-                  layers[layer.id] ? layer.color : "bg-zinc-700"
+                  mapLayerVisibility[layer.id] ? layer.color : "bg-zinc-700"
                 )}
               />
             </button>
@@ -88,19 +103,30 @@ export function MapOverlays() {
             Basemap
           </p>
           <div className="grid grid-cols-4 gap-1.5">
-            {["from-zinc-800 to-zinc-900", "from-slate-700 to-slate-900", "from-neutral-800 to-stone-900", "from-gray-700 to-gray-900"].map(
-              (gradient, i) => (
+            {[
+              { preset: "auto" as const, gradient: "from-zinc-800 to-zinc-900" },
+              { preset: "dark" as const, gradient: "from-slate-700 to-slate-900" },
+              { preset: "light" as const, gradient: "from-neutral-800 to-stone-900" },
+            ].map(({ preset, gradient }) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setBasemapPreset(preset)}
+                className={cn(
+                  "aspect-square rounded-lg border cursor-pointer transition-all hover:border-[#facc15]/40",
+                  basemapPreset === preset ? "border-[#facc15]/60" : "border-white/[0.08]"
+                )}
+                aria-label={`Set basemap to ${preset}`}
+              >
                 <div
-                  key={i}
                   className={cn(
-                    "aspect-square rounded-lg border cursor-pointer transition-all hover:border-[#facc15]/40",
-                    i === 0 ? "border-[#facc15]/60" : "border-white/[0.08]"
+                    "w-full h-full rounded-[7px] bg-gradient-to-br",
+                    gradient
                   )}
                 >
-                  <div className={cn("w-full h-full rounded-[7px] bg-gradient-to-br", gradient)} />
                 </div>
-              )
-            )}
+              </button>
+            ))}
           </div>
         </div>
       </motion.div>
@@ -110,7 +136,7 @@ export function MapOverlays() {
         initial={{ x: 30, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
-        className="absolute bottom-4 right-4 z-20 w-44 bg-[#0f172a] border border-white/[0.08] rounded-2xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
+        className="absolute bottom-20 sm:bottom-4 right-4 z-20 w-44 bg-[#0f172a] border border-white/[0.08] rounded-2xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
       >
         <h3 className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.25em] mb-3">
           Data Confidence

@@ -26,7 +26,7 @@ export function SearchBar() {
 
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	const canSearch = useMemo(() => query.trim().length >= 3, [query]);
+	const canSearch = useMemo(() => query.trim().length >= 2, [query]);
 
 	useEffect(() => {
 		const onClickOutside = (event: MouseEvent) => {
@@ -153,7 +153,7 @@ export function SearchBar() {
 						const nextQuery = event.target.value;
 						setQuery(nextQuery);
 
-						if (nextQuery.trim().length < 3) {
+						if (nextQuery.trim().length < 2) {
 							setResults([]);
 							setOpen(false);
 							setFocusedIndex(-1);

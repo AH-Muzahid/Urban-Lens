@@ -2,9 +2,9 @@
 
 import { Suspense, useState } from "react";
 import { SearchBar } from "@/components/map/SearchBar";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDashboard } from "@/context/DashboardContext";
-import { Moon, Sun } from "lucide-react";
+import { LocateFixed, LocationEdit, MapPin, Moon, Sun, X } from "lucide-react";
 import BasicDropdown from "@/components/smoothui/basic-dropdown";
 import BasicToast, { ToastType } from "@/components/smoothui/basic-toast";
 import { useTheme } from "next-themes";
@@ -21,7 +21,7 @@ function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="p-2 border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 shrink-0 transition-colors flex items-center justify-center w-9 h-9"
+      className="border border-zinc-200 dark:border-zinc-700 rounded-lg text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 shrink-0 transition-colors flex items-center justify-center w-9 h-9"
       aria-label="Toggle theme"
     >
       <Sun className="h-4 w-4 hidden dark:block" />
@@ -32,10 +32,16 @@ function ThemeToggle() {
 
 function TopBarContent() {
   const [radius, setRadius] = useState("500");
+  const [showCoordinateInputs, setShowCoordinateInputs] = useState(false);
+  const [latInput, setLatInput] = useState("");
+  const [lngInput, setLngInput] = useState("");
+  const [geoWarning, setGeoWarning] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<ToastType>("info");
   
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const { analyze, loading } = useDashboard();
 
@@ -54,9 +60,75 @@ function TopBarContent() {
     analyze(lat, lng, parseInt(radius), undefined, name);
   };
 
+  const handleCoordinateSearch = () => {
+    const lat = Number(latInput.trim());
+    const lng = Number(lngInput.trim());
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      setToastMessage("Latitude and longitude must be valid numbers");
+      setToastType("warning");
+      setShowToast(true);
+      return;
+    }
+
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      setToastMessage("Latitude must be -90..90 and longitude must be -180..180");
+      setToastType("warning");
+      setShowToast(true);
+      return;
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("lat", lat.toFixed(5));
+    params.set("lng", lng.toFixed(5));
+    if (!params.get("z")) {
+      params.set("z", "13");
+    }
+
+    const locationName = `Lat ${lat.toFixed(3)}, Lng ${lng.toFixed(3)}`;
+    params.set("name", locationName);
+
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    analyze(lat, lng, parseInt(radius), undefined, locationName);
+    setGeoWarning(null);
+
+    setToastMessage("Location loaded from coordinates");
+    setToastType("success");
+    setShowToast(true);
+  };
+
+  const handleUseCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setGeoWarning("Geolocation is not supported in this browser.");
+      setShowCoordinateInputs(true);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        setLatInput(lat.toFixed(6));
+        setLngInput(lng.toFixed(6));
+        setShowCoordinateInputs(true);
+        setGeoWarning(null);
+      },
+      () => {
+        setShowCoordinateInputs(true);
+        setGeoWarning("Location access is blocked. Enable location permission in your browser settings, then try again.");
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 8000,
+        maximumAge: 0,
+      }
+    );
+  };
+
   return (
     <nav className="relative flex items-center justify-between bg-white/95 dark:bg-[#0a0f1a]/95 backdrop-blur-xl px-6 h-[68px] border-b border-black/5 dark:border-white/[0.06] z-50 transition-colors">
-      <div className="flex items-center gap-6 flex-1 max-w-3xl">
+      <div className="flex items-center gap-3 flex-1 max-w-3xl">
         {/* Logo */}
         <div className="flex items-center gap-3 shrink-0">
           <div className="relative w-8 h-8 flex items-center justify-center">
@@ -64,15 +136,47 @@ function TopBarContent() {
             <div className="absolute inset-1 rounded-full border-[2.5px] border-[#facc15] border-t-transparent animate-[spin_3s_linear_infinite]" />
             <div className="w-2.5 h-2.5 bg-[#facc15] rounded-full shadow-[0_0_10px_rgba(250,204,21,0.8)]" />
           </div>
-          <span className="text-zinc-900 dark:text-white font-semibold tracking-[0.15em] text-lg uppercase transition-colors">URBANLENS</span>
+          <span className="text-zinc-900 dark:text-white font-semibold  text-xl uppercase transition-colors">URBANLENS</span>
         </div>
 
         {/* Search */}
-        <div className="flex-1">
+        <div className="w-1/2">
           <Suspense fallback={<div className="h-10 w-full bg-[#111827] rounded-lg animate-pulse" />}>
             <SearchBar />
           </Suspense>
         </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            setShowCoordinateInputs((prev) => {
+              const nextOpen = !prev;
+              if (nextOpen) {
+                const currentLat = searchParams.get("lat");
+                const currentLng = searchParams.get("lng");
+                if (currentLat) setLatInput(currentLat);
+                if (currentLng) setLngInput(currentLng);
+              }
+              return nextOpen;
+            });
+          }}
+          className="h-10 shrink-0 rounded-lg border border-black/10 dark:border-white/[0.08] bg-white/80 dark:bg-[#0b1220]/70 px-3 text-sm font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-white dark:hover:bg-[#111827] inline-flex items-center"
+          aria-label="Open coordinate inputs"
+          aria-pressed={showCoordinateInputs}
+        >
+          <LocationEdit className="w-4 h-4" />
+        
+        </button>
+
+        <button
+          type="button"
+          onClick={handleUseCurrentLocation}
+          className="h-10 w-10 shrink-0 rounded-lg border border-black/10 dark:border-white/[0.08] bg-white/80 dark:bg-[#0b1220]/70 text-zinc-700 dark:text-zinc-200 hover:bg-white dark:hover:bg-[#111827] inline-flex items-center justify-center"
+          aria-label="Use current location"
+        >
+          <LocateFixed className="w-4 h-4" />
+        </button>
+
       </div>
 
       <div className="flex items-center space-x-4 shrink-0">
@@ -113,6 +217,88 @@ function TopBarContent() {
         onClose={() => setShowToast(false)}
         type={toastType}
       />
+
+      {showCoordinateInputs && (
+        <div className="absolute top-full left-[112px] mt-3 w-[min(620px,calc(100vw-2rem))] rounded-2xl border border-black/10 dark:border-white/[0.08] bg-white/95 dark:bg-[#0b1220]/95 backdrop-blur-xl shadow-2xl p-3 sm:p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-primary" />
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-zinc-700 dark:text-zinc-300">
+                Location
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowCoordinateInputs(false)}
+              className="inline-flex items-center justify-center h-7 w-7 rounded-md text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/10"
+              aria-label="Close coordinate panel"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {geoWarning && (
+            <div className="mb-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+              {geoWarning}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label className="block text-[11px] font-semibold text-zinc-600 dark:text-zinc-300 mb-1.5">Latitude</label>
+              <input
+                type="text"
+                value={latInput}
+                onChange={(event) => setLatInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleCoordinateSearch();
+                  }
+                }}
+                placeholder="23.810300"
+                className="h-10 w-full rounded-lg border border-black/10 dark:border-white/[0.08] bg-white/80 dark:bg-[#102033]/70 px-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500/80 outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/40"
+                aria-label="Latitude"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-semibold text-zinc-600 dark:text-zinc-300 mb-1.5">Longitude</label>
+              <input
+                type="text"
+                value={lngInput}
+                onChange={(event) => setLngInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleCoordinateSearch();
+                  }
+                }}
+                placeholder="90.412500"
+                className="h-10 w-full rounded-lg border border-black/10 dark:border-white/[0.08] bg-white/80 dark:bg-[#102033]/70 px-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500/80 outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/40"
+                aria-label="Longitude"
+              />
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setShowCoordinateInputs(false)}
+              className="h-9 px-3 rounded-lg border border-black/10 dark:border-white/[0.08] text-sm font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-black/5 dark:hover:bg-white/10"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              onClick={handleCoordinateSearch}
+              className="h-9 px-4 rounded-lg bg-[#facc15] hover:bg-[#fde047] text-black text-sm font-bold"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

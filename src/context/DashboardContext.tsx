@@ -9,7 +9,13 @@ interface DashboardContextType {
   loading: boolean;
   error: string | null;
   isSidebarOpen: boolean;
+  isMapOverlaysVisible: boolean;
+  basemapPreset: "auto" | "light" | "dark";
+  mapLayerVisibility: Record<string, boolean>;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsMapOverlaysVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setBasemapPreset: React.Dispatch<React.SetStateAction<"auto" | "light" | "dark">>;
+  toggleMapLayer: (layerId: string) => void;
   toggleSidebar: () => void;
   analyze: (lat: number, lng: number, radius: number, slot?: number, locationName?: string) => Promise<void>;
   addToComparison: (metrics: UrbanMetrics) => void;
@@ -19,14 +25,31 @@ interface DashboardContextType {
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
+const DEFAULT_MAP_LAYER_VISIBILITY: Record<string, boolean> = {
+  amenities: true,
+  greenspace: true,
+  buildings: true,
+  transit: false,
+  noise: false,
+};
+
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [metrics, setMetrics] = useState<UrbanMetrics | null>(null);
   const [comparisonMetrics, setComparisonMetrics] = useState<(UrbanMetrics | null)[]>([null, null]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMapOverlaysVisible, setIsMapOverlaysVisible] = useState(true);
+  const [basemapPreset, setBasemapPreset] = useState<"auto" | "light" | "dark">("auto");
+  const [mapLayerVisibility, setMapLayerVisibility] = useState<Record<string, boolean>>(DEFAULT_MAP_LAYER_VISIBILITY);
 
   const toggleSidebar = useCallback(() => setIsSidebarOpen(prev => !prev), []);
+  const toggleMapLayer = useCallback((layerId: string) => {
+    setMapLayerVisibility((prev) => ({
+      ...prev,
+      [layerId]: !prev[layerId],
+    }));
+  }, []);
 
   const analyze = useCallback(async (lat: number, lng: number, radius: number, slot?: number, locationName?: string) => {
     setLoading(true);
@@ -91,7 +114,13 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         loading, 
         error, 
         isSidebarOpen,
+        isMapOverlaysVisible,
+        basemapPreset,
+        mapLayerVisibility,
         setIsSidebarOpen,
+        setIsMapOverlaysVisible,
+        setBasemapPreset,
+        toggleMapLayer,
         toggleSidebar,
         analyze, 
         addToComparison, 
