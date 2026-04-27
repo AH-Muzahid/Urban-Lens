@@ -4,8 +4,6 @@ import { TopBar } from "@/components/layout/TopBar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NavSidebar } from "@/components/layout/NavSidebar";
 import { ComparisonMatrix } from "@/components/dashboard/ComparisonMatrix";
-import { MapOverlays } from "@/components/map/MapOverlays";
-import { DataSources } from "@/components/ui/DataSources";
 import { ThinFooter } from "@/components/layout/ThinFooter";
 
 export default function Home() {
@@ -50,12 +48,6 @@ export default function Home() {
           {/* Inner UI elements that need pointer-events */}
           <div className="pointer-events-auto">
             <ComparisonMatrix />
-          </div>
-          <div className="pointer-events-auto">
-            <MapOverlays />
-          </div>
-          <div className="pointer-events-auto">
-            <DataSources layout="overlay" />
           </div>
         </div>
 

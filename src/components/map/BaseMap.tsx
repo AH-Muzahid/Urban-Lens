@@ -3,17 +3,40 @@
 import * as React from "react";
 import Map from "react-map-gl/maplibre";
 import type { MapRef } from "react-map-gl/maplibre";
+import type { StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { MapControls } from "@/components/layout/MapControls";
-import { GlassPanel } from "@/components/ui/GlassPanel";
 import { useDashboard } from "@/context/DashboardContext";
-import { cn } from "@/lib/utils";
 import { useMap } from "react-map-gl/maplibre";
 
-const LIGHT_MAP_STYLE = "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
+const NATURAL_MAP_STYLE = "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
+const STREETS_MAP_STYLE = "https://demotiles.maplibre.org/style.json";
+const LIGHT_MAP_STYLE = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 const DARK_MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+const SATELLITE_MAP_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    esri: {
+      type: "raster",
+      tiles: [
+        "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      ],
+      tileSize: 256,
+      attribution: "Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+    },
+  },
+  layers: [
+    {
+      id: "satellite",
+      type: "raster",
+      source: "esri",
+      minzoom: 0,
+      maxzoom: 22,
+    },
+  ],
+};
 
 const MAP_LAYER_RULES = [
   { id: "amenities", keywords: ["poi", "amenity", "label", "place", "settlement"] },
@@ -75,7 +98,7 @@ export function BaseMap() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { resolvedTheme } = useTheme();
-  const { isSidebarOpen, basemapPreset, mapLayerVisibility } = useDashboard();
+  const { basemapPreset, mapLayerVisibility } = useDashboard();
   const mapRef = React.useRef<MapRef | null>(null);
 
   // Parse URL state or default to a starting location (e.g., London)
@@ -157,13 +180,19 @@ export function BaseMap() {
     return () => clearTimeout(handler);
   }, [viewState, pathname, router, searchParams]);
 
-  const mapStyle = basemapPreset === "light"
+  const mapStyle = basemapPreset === "natural"
+    ? NATURAL_MAP_STYLE
+    : basemapPreset === "streets"
+    ? STREETS_MAP_STYLE
+    : basemapPreset === "light"
     ? LIGHT_MAP_STYLE
     : basemapPreset === "dark"
     ? DARK_MAP_STYLE
+    : basemapPreset === "satellite"
+    ? SATELLITE_MAP_STYLE
     : resolvedTheme === "dark"
     ? DARK_MAP_STYLE
-    : LIGHT_MAP_STYLE;
+    : NATURAL_MAP_STYLE;
 
   return (
     <div className="absolute inset-0 z-0">
@@ -178,37 +207,6 @@ export function BaseMap() {
         <MapLayerSync mapLayerVisibility={mapLayerVisibility} />
         <MapControls />
       </Map>
-
-      {/* Map Info Overlay */}
-      <div
-        className={cn(
-          "absolute bottom-12 z-20 pointer-events-none transition-all duration-300",
-          isSidebarOpen ? "left-[548px]" : "left-28"
-        )}
-      >
-        <GlassPanel className="px-4 py-2 flex items-center gap-6">
-          <div className="flex flex-col">
-            <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-0.5">Latitude</span>
-            <span className="text-[10px] font-mono font-bold text-white tracking-tighter">
-              {viewState.latitude.toFixed(6)}
-            </span>
-          </div>
-          <div className="w-[1px] h-6 bg-white/5" />
-          <div className="flex flex-col">
-            <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-0.5">Longitude</span>
-            <span className="text-[10px] font-mono font-bold text-white tracking-tighter">
-              {viewState.longitude.toFixed(6)}
-            </span>
-          </div>
-          <div className="w-[1px] h-6 bg-white/5" />
-          <div className="flex flex-col">
-            <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-0.5">Zoom Level</span>
-            <span className="text-[10px] font-mono font-bold text-primary tracking-tighter">
-              {viewState.zoom.toFixed(2)}
-            </span>
-          </div>
-        </GlassPanel>
-      </div>
     </div>
   );
 }

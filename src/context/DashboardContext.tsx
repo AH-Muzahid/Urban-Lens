@@ -10,11 +10,13 @@ interface DashboardContextType {
   error: string | null;
   isSidebarOpen: boolean;
   isMapOverlaysVisible: boolean;
-  basemapPreset: "auto" | "light" | "dark";
+  mapOverlayMode: "layers" | "theme";
+  basemapPreset: "natural" | "streets" | "light" | "dark" | "satellite";
   mapLayerVisibility: Record<string, boolean>;
   setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsMapOverlaysVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setBasemapPreset: React.Dispatch<React.SetStateAction<"auto" | "light" | "dark">>;
+  setMapOverlayMode: React.Dispatch<React.SetStateAction<"layers" | "theme">>;
+  setBasemapPreset: React.Dispatch<React.SetStateAction<"natural" | "streets" | "light" | "dark" | "satellite">>;
   toggleMapLayer: (layerId: string) => void;
   toggleSidebar: () => void;
   analyze: (lat: number, lng: number, radius: number, slot?: number, locationName?: string) => Promise<void>;
@@ -40,7 +42,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMapOverlaysVisible, setIsMapOverlaysVisible] = useState(true);
-  const [basemapPreset, setBasemapPreset] = useState<"auto" | "light" | "dark">("auto");
+  const [mapOverlayMode, setMapOverlayMode] = useState<"layers" | "theme">("layers");
+  const [basemapPreset, setBasemapPreset] = useState<"natural" | "streets" | "light" | "dark" | "satellite">("natural");
   const [mapLayerVisibility, setMapLayerVisibility] = useState<Record<string, boolean>>(DEFAULT_MAP_LAYER_VISIBILITY);
 
   const toggleSidebar = useCallback(() => setIsSidebarOpen(prev => !prev), []);
@@ -115,10 +118,12 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         error, 
         isSidebarOpen,
         isMapOverlaysVisible,
+        mapOverlayMode,
         basemapPreset,
         mapLayerVisibility,
         setIsSidebarOpen,
         setIsMapOverlaysVisible,
+        setMapOverlayMode,
         setBasemapPreset,
         toggleMapLayer,
         toggleSidebar,
